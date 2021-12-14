@@ -13,63 +13,40 @@ namespace WebApi_New.Models
     public class MarketingMaster
     {
         public readonly IConfiguration _configuration;
-
+        Codegravity_Staffing_DAL objGG_Dal;
         public MarketingMaster(IConfiguration configuration)
         {
             _configuration = configuration;
+            objGG_Dal = new Codegravity_Staffing_DAL(_configuration);
         }
-        public int Id { get; set; }
-        public int Consult_Id { get; set; }
+       
 
-        public string Assigned_Sales_Recruiter { get; set; }
-        public string Marketing_Tech { get; set; }
-        public string Is_Open_To_All { get; set; }
-        public DateTime Marketing_Start_Date { get; set; }
-        public string Submitted_Vendor { get; set; }
-        public string End_Client_Name { get; set; }
-        public string Rate_confirmation { get; set; }
-        public string Bill_Rate { get; set; }
-        public DateTime Assignment_date { get; set; }
-        public string Assignment_status { get; set; }
-        public DateTime Interview_Schedudule_Date { get; set; }
-        public string Interview_Status { get; set; }
-        public string Visa_Status { get; set; }
-        public string Marketing_Status { get; set; }
-
-        public DateTime Marketing_End_Date { get; set; }
-        public string Notes { get; set; }
-
-        public DataTable GetConsultDetails()
+        public List<cg_Marketing> getMarketingDetails()
         {
-            DataTable dtConsult = new DataTable();
-
+            List<cg_Marketing> dtConsult = new List<cg_Marketing>();
             try
             {
-
-                string Query = @"SELECT *  FROM [CodeGravity].[CG].[Consultant_Marketing]";
-
-                string SQlDatasource = _configuration.GetConnectionString("CodeGravityDB");
-                SqlDataReader myReader;
-                using (SqlConnection mycon = new SqlConnection(SQlDatasource))
-                {
-                    mycon.Open();
-                    using (SqlCommand mycommand = new SqlCommand(Query, mycon))
-                    {
-                        myReader = mycommand.ExecuteReader();
-                        dtConsult.Load(myReader);
-                        myReader.Close();
-                        mycon.Close();
-                    }
-                }
+                dtConsult = objGG_Dal.getMarketingDetails();
             }
             catch (Exception ex)
             {
-
-                return null;
             }
             return dtConsult;
         }
 
+        public List<EmployeeMaster> getRecruiterName()
+        {
+            try
+            {
+
+            }
+            catch (Exception)
+            {
+
+                //throw;
+            }
+            return null;
+        }
 
 
 

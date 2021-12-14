@@ -13,51 +13,29 @@ namespace WebApi_New.Models
     public class ConsultantMaster
     {
         public readonly IConfiguration _configuration;
-
+        Codegravity_Staffing_DAL objGG_Dal;
         public ConsultantMaster(IConfiguration configuration)
         {
             _configuration = configuration;
+            objGG_Dal = new Codegravity_Staffing_DAL(_configuration);
         }
-        public int Consult_Id { get; set; }
-        public string Consult_Name { get; set; }
-        public string Consult_Email { get; set; }
-        public string Consult_Phone { get; set; }
-        public string Consult_Address { get; set; }
-        public string Consult_Technology { get; set; }
-        public string Consult_VisaStatus { get; set; }
-        public int Consult_Status { get; set; }
+       
 
-        public DataTable GetConsultDetails()
+        public List<cg_Consultant> GetConsultDetails()
         {
-            DataTable dtConsult = new DataTable();
+            List<cg_Consultant> listConsult = new List<cg_Consultant>();
 
             try
             {
-
-                string Query = @"SELECT *  FROM [CodeGravity].[CG].[ConsultantMaster]";
-
-                string SQlDatasource = _configuration.GetConnectionString("CodeGravityDB");
-                SqlDataReader myReader;
-                using (SqlConnection mycon = new SqlConnection(SQlDatasource))
-                {
-                    mycon.Open();
-                    using (SqlCommand mycommand = new SqlCommand(Query, mycon))
-                    {
-                        myReader = mycommand.ExecuteReader();
-                        dtConsult.Load(myReader);
-                        myReader.Close();
-                        mycon.Close();
-                    }
-                }
+                listConsult = objGG_Dal.getConsultDetails();
             }
             catch (Exception ex)
             {
-
-                return null;
             }
-            return dtConsult;
+            return listConsult;
+
         }
-        public DataTable AddConsultDetails(ConsultantMaster Objcm)
+        public DataTable AddConsultDetails(cg_Consultant Objcm)
         {
             DataTable dtConsult = new DataTable();
 
@@ -128,7 +106,7 @@ namespace WebApi_New.Models
             }
             return dtConsult;
         }
-        public DataTable updateConsultDetails(ConsultantMaster objCm)
+        public DataTable updateConsultDetails(cg_Consultant objCm)
         {
             DataTable dtConsult = new DataTable();
 

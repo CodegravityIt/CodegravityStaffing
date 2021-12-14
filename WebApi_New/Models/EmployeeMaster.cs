@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,13 +8,28 @@ namespace WebApi_New.Models
 {
     public class EmployeeMaster
     {
-        public int Emp_Id { get; set; }
-        public string Emp_Name { get; set; }
-        public string Emp_Email { get; set; }
-        public string Emp_Phone { get; set; }
-        public int Emp_work_Region { get; set; }
-        public int Emp_IncentiveType { get; set; }
-        public int Emp_Status { get; set; }
-        public int Role_Id { get; set; }
+        public readonly IConfiguration _configuration;
+        Codegravity_Staffing_DAL objGG_Dal;
+        public EmployeeMaster(IConfiguration configuration)
+        {
+            _configuration = configuration;
+            objGG_Dal = new Codegravity_Staffing_DAL(_configuration);
+        }
+
+
+        public List<cg_Employees> GetEmployeeDetails()
+        {
+            List<cg_Employees> listEmployee = new List<cg_Employees>();
+
+            try
+            {
+                listEmployee = objGG_Dal.getEmployeeDetails();
+            }
+            catch (Exception ex)
+            {
+            }
+            return listEmployee;
+
+        }
     }
 }

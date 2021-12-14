@@ -15,32 +15,22 @@ namespace WebApi_New.Controllers
     public class EmployeeMasterController : ControllerBase
     {
         private readonly IConfiguration _configuration;
+        EmployeeMaster ObjEM;
         public EmployeeMasterController(IConfiguration configuration)
         {
+            _configuration = configuration;
+            ObjEM = new EmployeeMaster(_configuration);
             _configuration = configuration;
         }
         [HttpGet]
         public JsonResult Get()
         {
-            string Query = @"SELECT *  FROM [CodeGravity].[CG].[EmployeeMaster]";
-            DataTable table = new DataTable();
-            string SQlDatasource = _configuration.GetConnectionString("CodeGravityDB");
-            SqlDataReader myReader;
-            using (SqlConnection mycon = new SqlConnection(SQlDatasource))
-            {
-                mycon.Open();
-                using (SqlCommand mycommand = new SqlCommand(Query, mycon))
-                {
-                    myReader = mycommand.ExecuteReader();
-                    table.Load(myReader);
-                    myReader.Close();
-                    mycon.Close();
-                }
-            }
-            return new JsonResult(table);
+
+            return new JsonResult(ObjEM.GetEmployeeDetails());
+
         }
         [HttpPost]
-        public JsonResult post(EmployeeMaster em)
+        public JsonResult post(cg_Employees em)
         {
             string Query = @"insert into [CG].[EmployeeMaster] values(
 '" + em.Emp_Name + @"',
@@ -70,7 +60,7 @@ namespace WebApi_New.Controllers
             return new JsonResult("Added Succfully");
         }
         [HttpPut]
-        public JsonResult put(EmployeeMaster em)
+        public JsonResult put(cg_Employees em)
         {
             string Query = @"update [CG].[EmployeeMaster] set
        [Emp_Name]='" + em.Emp_Name + @"'

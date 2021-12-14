@@ -26,18 +26,18 @@ namespace WebApi_New.Controllers
         [HttpGet]
         public JsonResult Get()
         {
-            DataTable result = ObjCM.GetConsultDetails();
-            return new JsonResult(result);
+           // DataTable result = ObjCM.GetConsultDetails();
+            return new JsonResult(ObjCM.GetConsultDetails());
         }
         [HttpPost]
-        public JsonResult post(ConsultantMaster cm)
+        public JsonResult post(cg_Consultant cm)
         {
 
             DataTable result = ObjCM.AddConsultDetails(cm);
             return new JsonResult("Added Succfully");
         }
         [HttpPut]
-        public JsonResult put(ConsultantMaster cm)
+        public JsonResult put(cg_Consultant cm)
         {
             DataTable result = ObjCM.AddConsultDetails(cm);
             return new JsonResult("updated Succfully");

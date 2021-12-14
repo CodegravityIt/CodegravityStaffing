@@ -26,8 +26,8 @@ namespace WebApi_New.Controllers
         [HttpGet]
         public JsonResult Get()
         {
-            DataTable result = ObjCM.GetConsultDetails();
-            return new JsonResult(result);
+            //DataTable result = ObjCM.getMarketingDetails();
+            return new JsonResult(ObjCM.getMarketingDetails());
         }
     }
 }
