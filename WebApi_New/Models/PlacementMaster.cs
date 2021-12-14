@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace WebApi_New.Models
 {
-    public class PurchaseOrderMaster
+    public class PlacementMaster
     {
     }
 }

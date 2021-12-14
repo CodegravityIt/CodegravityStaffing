@@ -9,7 +9,7 @@ namespace WebApi_New.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PurchaseOrderMasterController : ControllerBase
+    public class PlacementMasterController : ControllerBase
     {
     }
 }
