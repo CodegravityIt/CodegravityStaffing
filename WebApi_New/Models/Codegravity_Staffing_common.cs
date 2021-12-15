@@ -54,4 +54,29 @@ namespace WebApi_New.Models
         public string Role_Id { get; set; }
 
     }
+
+    public class cg_Placement
+    {
+        public int Id { get; set; }
+        public int Consult_id { get; set; }
+        public string Consult_Name { get; set; }
+
+        public string Placed_Sales_Recruiter { get; set; }
+        public string Placed_Tech { get; set; }
+        public string Is_Open_To_All { get; set; }
+        public string PO_Date { get; set; }
+        public string Project_Start_Date { get; set; }
+        public string Project_Duration { get; set; }
+        public string Bill_Rate { get; set; }
+        public string Consultant_Pay_Rate { get; set; }
+        public string Vendor_Name { get; set; }
+        public string Vendor_Address { get; set; }
+        public string Client_Name { get; set; }
+        public string Client_Address { get; set; }
+        public string Project_End_Date { get; set; }
+        public string Visa_Type { get; set; }
+
+        public string Project_Status { get; set; }
+        public string Notes { get; set; }
+    }
 }
