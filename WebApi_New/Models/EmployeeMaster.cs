@@ -31,5 +31,20 @@ namespace WebApi_New.Models
             return listEmployee;
 
         }
+
+        public List<cg_WorkRegion> GetworkRegionList()
+        {
+            List<cg_WorkRegion> listcountries = new List<cg_WorkRegion>();
+
+            try
+            {
+               // listcountries = objGG_Dal.getCountyrDetails();
+            }
+            catch (Exception ex)
+            {
+            }
+            return listcountries;
+
+        }
     }
 }

@@ -34,11 +34,19 @@ namespace WebApi_New.Models
             return dtConsult;
         }
 
-        public List<EmployeeMaster> getRecruiterName()
+        public List<cg_Technology> getTechnologyNames()
         {
             try
             {
-
+                List<cg_Technology> dtConsult = new List<cg_Technology>();
+                try
+                {
+                    dtConsult = objGG_Dal.getTechnologyDetails();
+                }
+                catch (Exception ex)
+                {
+                }
+                return dtConsult;
             }
             catch (Exception)
             {

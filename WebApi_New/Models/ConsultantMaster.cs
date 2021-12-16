@@ -43,13 +43,15 @@ namespace WebApi_New.Models
             {
 
                 string Query = @"insert into [CG].[ConsultantMaster] values(
-                        '" + Objcm.Consult_Name + @"',
+                        '" + Objcm.Consult_First_Name + @"',
                         '" + Objcm.Consult_Email + @"',
                         '" + Objcm.Consult_Phone + @"',
                         '" + Objcm.Consult_Address + @"',
                         '" + Objcm.Consult_Technology + @"',
                         '" + Objcm.Consult_VisaStatus + @"',
-                        " + Objcm.Consult_Status + @"
+                        " + Objcm.Consult_Status + @",
+                        '" + Objcm.Consult_Last_Name + @"',
+                        '" + Objcm.Consult_DOB + @"'
                          )";
 
                 DataTable table = new DataTable();
@@ -113,14 +115,16 @@ namespace WebApi_New.Models
             try
             {
                 string Query = @"update [CG].[ConsultantMaster] set
-                               [Consult_Name]='" + objCm.Consult_Name + @"'
+                               [Consult_First_Name]='" + objCm.Consult_First_Name + @"'
                               ,[Consult_Email]='" + objCm.Consult_Email + @"'
                               ,[Consult_Phone]='" + objCm.Consult_Phone + @"'
                               ,[Consult_Address]='" + objCm.Consult_Address + @"'
                               ,[Consult_Technology]='" + objCm.Consult_Technology + @"'
                               ,[Consult_VisaStatus]='" + objCm.Consult_VisaStatus + @"'
-                              ,[Consult_Status] ='" + objCm.Consult_Status + @"'where 
-                               [Consult_Id]=" + objCm.Consult_Id + @" ";
+                              ,[Consult_Status] ='" + objCm.Consult_Status + @"'
+                              ,[Consult_Status] ='" + objCm.Consult_Last_Name + @"'
+                              ,[Consult_Status] ='" + objCm.Consult_DOB + @"'
+                               where [Consult_Id]=" + objCm.Consult_Id + @" ";
 
                 DataTable table = new DataTable();
                 string SQlDatasource = _configuration.GetConnectionString("CodeGravityDB");

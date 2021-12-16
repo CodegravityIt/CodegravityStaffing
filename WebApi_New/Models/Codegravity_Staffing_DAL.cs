@@ -49,7 +49,8 @@ namespace WebApi_New.Models
                                      {
                                          Id = dr["Id"] is DBNull ? 0 : Convert.ToInt32(dr["Id"]),
                                          Consult_Id = dr["Consult_id"] is DBNull ? 0 : Convert.ToInt32(dr["Consult_id"]),
-                                         Consult_Name = listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(dr["Consult_id"])).FirstOrDefault().Consult_Name.ToString(),
+                                         Consult_Name = listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(dr["Consult_id"])).FirstOrDefault().Consult_Full_Name.ToString(),
+                                                        
                                          Assigned_Sales_Recruiter = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(dr["Assigned_Sales_Recruiter"])).FirstOrDefault().Emp_Name.ToString(),
                                          Marketing_Tech = dr["Marketing_Tech"] is DBNull ? "" : Convert.ToString(dr["Marketing_Tech"]),
                                          Is_Open_To_All = dr["Is_Open_To_All"] is DBNull ? "" : Convert.ToString(dr["Is_Open_To_All"]),
@@ -107,14 +108,16 @@ namespace WebApi_New.Models
                                    select new cg_Consultant()
                                    {
                                        Consult_Id = Convert.ToInt32(dr["Consult_Id"]),
-                                       Consult_Name = dr["Consult_Name"].ToString(),
+                                       Consult_First_Name = dr["Consult_First_Name"].ToString(),
+                                       Consult_Last_Name = dr["Consult_Last_Name"].ToString(),
                                        Consult_Email = dr["Consult_Email"].ToString(),
                                        Consult_Phone = dr["Consult_Phone"].ToString(),
                                        Consult_Address = dr["Consult_Address"].ToString(),
                                        Consult_Technology = dr["Consult_Technology"].ToString(),
                                        Consult_VisaStatus = dr["Consult_VisaStatus"].ToString(),
-                                       Consult_Status = Convert.ToInt32(dr["Consult_Status"])
-
+                                       Consult_Status = Convert.ToInt32(dr["Consult_Status"]),
+                                       Consult_DOB = dr["Consult_DOB"].ToString(),
+                                       Consult_Full_Name= dr["Consult_First_Name"].ToString()+" "+dr["Consult_Last_Name"].ToString()
                                    }).ToList();
 
                 }
@@ -130,7 +133,8 @@ namespace WebApi_New.Models
         public List<cg_Employees> getEmployeeDetails()
         {
             DataTable dtRecruiters = new DataTable();
-            List<cg_Employees> listConsult = new List<cg_Employees>();
+            List<cg_Employees> listemployee = new List<cg_Employees>();
+            List<cg_WorkRegion> listCountry = getCountryDetails();
 
             try
             {
@@ -151,14 +155,14 @@ namespace WebApi_New.Models
                 }
                 if (dtRecruiters != null && dtRecruiters.Rows.Count > 0)
                 {
-                    listConsult = (from DataRow dr in dtRecruiters.Rows
+                    listemployee = (from DataRow dr in dtRecruiters.Rows
                                    select new cg_Employees()
                                    {
                                        Emp_Id = Convert.ToInt32(dr["Emp_Id"]),
-                                       Emp_Name = dr["Emp_Name"].ToString(),
+                                       Emp_Name = dr["Emp_FirstName"].ToString()+" "+dr["Emp_LastName"].ToString(),
                                        Emp_Email = dr["Emp_Email"].ToString(),
                                        Emp_Phone = dr["Emp_Phone"].ToString(),
-                                       Emp_work_Region = dr["Emp_work_Region"].ToString(),
+                                       Emp_work_Region = listCountry.Where(p => p.CountryId == Convert.ToInt32(dr["Emp_work_Region"])).FirstOrDefault().CountyName.ToString(),//dr["Emp_work_Region"].ToString(),
                                        Emp_IncentiveType = dr["Emp_IncentiveType"].ToString(),
                                        Emp_Status = dr["Emp_Status"].ToString(),
                                        Role_Id = dr["Role_Id"].ToString()
@@ -172,7 +176,7 @@ namespace WebApi_New.Models
 
                 return null;
             }
-            return listConsult;
+            return listemployee;
         }
 
 
@@ -208,7 +212,8 @@ namespace WebApi_New.Models
                                      {
                                          Id = dr["Id"] is DBNull ? 0 : Convert.ToInt32(dr["Id"]),
                                          Consult_id = dr["Consult_id"] is DBNull ? 0 : Convert.ToInt32(dr["Consult_id"]),
-                                         Consult_Name = listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(dr["Consult_id"])).FirstOrDefault().Consult_Name.ToString(),
+                                         Consult_Name = listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(dr["Consult_id"])).FirstOrDefault().Consult_First_Name.ToString()+
+                                                        listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(dr["Consult_id"])).FirstOrDefault().Consult_Last_Name.ToString(),
                                          Placed_Sales_Recruiter = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(dr["Placed_Sales_Recruiter"])).FirstOrDefault().Emp_Name.ToString(),
                                          Placed_Tech = dr["Placed_Tech"] is DBNull ? "" : Convert.ToString(dr["Placed_Tech"]),
                                          PO_Date = dr["PO_Date"] is DBNull ? "" : Convert.ToDateTime(dr["PO_Date"]).ToShortDateString(),
@@ -235,6 +240,94 @@ namespace WebApi_New.Models
                 return null;
             }
             return listMarketing;
+        }
+
+        public List<cg_WorkRegion> getCountryDetails()
+        {
+            DataTable dtWorkregion = new DataTable();
+            List<cg_WorkRegion> listConsult = new List<cg_WorkRegion>();
+
+            try
+            {
+                string Query = @"[dbo].[Sp_Getcountrydetails]";
+                string sqlDatasource = _configuration.GetConnectionString("CodeGravityDB");
+                SqlDataAdapter dbAdapater;
+                using (SqlConnection dbConnection = new SqlConnection(sqlDatasource))
+                {
+                    dbConnection.Open();
+                    using (SqlCommand dbcommand = new SqlCommand(Query, dbConnection))
+                    {
+                        dbcommand.CommandType = CommandType.StoredProcedure;
+                        //dbcommand.Parameters.AddWithValue("paraname", SqlDbType.NVarChar).Value = "";
+                        dbAdapater = new SqlDataAdapter(dbcommand);
+                        dbAdapater.Fill(dtWorkregion);
+                        dbConnection.Close();
+                    }
+                }
+                if (dtWorkregion != null && dtWorkregion.Rows.Count > 0)
+                {
+                    listConsult = (from DataRow dr in dtWorkregion.Rows
+                                   select new cg_WorkRegion()
+                                   {
+                                       CountryId = Convert.ToInt32(dr["CountryId"]),
+                                       CountyName = dr["CountyName"].ToString(),
+                                       Country_Description = dr["Country_Description"].ToString()
+
+
+                                   }).ToList();
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return null;
+            }
+            return listConsult;
+        }
+        public List<cg_Technology> getTechnologyDetails()
+        {
+            DataTable dtTechnology = new DataTable();
+            List<cg_Technology> listConsult = new List<cg_Technology>();
+
+            try
+            {
+                string Query = @"[dbo].[Sp_Gettechnologydetails]";
+                string sqlDatasource = _configuration.GetConnectionString("CodeGravityDB");
+                SqlDataAdapter dbAdapater;
+                using (SqlConnection dbConnection = new SqlConnection(sqlDatasource))
+                {
+                    dbConnection.Open();
+                    using (SqlCommand dbcommand = new SqlCommand(Query, dbConnection))
+                    {
+                        dbcommand.CommandType = CommandType.StoredProcedure;
+                        //dbcommand.Parameters.AddWithValue("paraname", SqlDbType.NVarChar).Value = "";
+                        dbAdapater = new SqlDataAdapter(dbcommand);
+                        dbAdapater.Fill(dtTechnology);
+                        dbConnection.Close();
+                    }
+                }
+                if (dtTechnology != null && dtTechnology.Rows.Count > 0)
+                {
+                    listConsult = (from DataRow dr in dtTechnology.Rows
+                                   select new cg_Technology()
+                                   {
+                                       Id = Convert.ToInt32(dr["Id"]),
+                                       Technology_Name = dr["Technology_Name"].ToString(),
+                                       Technology_Description = dr["Technology_Description"].ToString(),
+                                       Notes=dr["Notes"].ToString()
+
+
+                                   }).ToList();
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return null;
+            }
+            return listConsult;
         }
     }
 }

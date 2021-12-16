@@ -29,5 +29,13 @@ namespace WebApi_New.Controllers
             //DataTable result = ObjCM.getMarketingDetails();
             return new JsonResult(ObjCM.getMarketingDetails());
         }
+        //[HttpGet]
+        //public JsonResult GetTecnologyNames()
+        //{
+        //    //DataTable result = ObjCM.getMarketingDetails();
+        //    return new JsonResult(ObjCM.getTechnologyNames());
+        //}
+
+        
     }
 }
