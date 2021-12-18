@@ -52,13 +52,15 @@ namespace WebApi_New.Models
     public class cg_Employees
     {
         public int Emp_Id { get; set; }
-        public string Emp_Name { get; set; }
+        public string Emp_FirstName { get; set; }
+        public string Emp_LastName { get; set; }
+
         public string Emp_Email { get; set; }
         public string Emp_Phone { get; set; }
-        public string Emp_work_Region { get; set; }
-        public string Emp_IncentiveType { get; set; }
-        public string Emp_Status { get; set; }
-        public string Role_Id { get; set; }
+        public int Emp_work_Region { get; set; }
+        public int Emp_IncentiveType { get; set; }
+        public int Emp_Status { get; set; }
+        public int Role_Id { get; set; }
 
     }
 

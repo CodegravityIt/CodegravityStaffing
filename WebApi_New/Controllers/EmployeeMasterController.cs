@@ -32,25 +32,38 @@ namespace WebApi_New.Controllers
         [HttpPost]
         public JsonResult post(cg_Employees em)
         {
-            string Query = @"insert into [CG].[EmployeeMaster] values(
-'" + em.Emp_Name + @"',
-'" + em.Emp_Email + @"',
-'" + em.Emp_Phone + @"',
-'" + em.Emp_work_Region + @"',
-'" + em.Emp_IncentiveType + @"',
-'" + em.Emp_Status + @"',
-'" + em.Role_Id + @"'
+//            string Query = @"insert into [CG].[EmployeeMaster] values(
+//'" + em.Emp_FirstName + @"',
+//'" + em.Emp_LastName + @"',
 
-)";
+//'" + em.Emp_Email + @"',
+//'" + em.Emp_Phone + @"',
+//'" + em.Emp_work_Region + @"',
+//'" + em.Emp_IncentiveType + @"',
+//'" + em.Emp_Status + @"',
+//'" + em.Role_Id + @"'
+
+//)";
+
+            String query = "INSERT INTO [CG].[EmployeeMaster] (Emp_FirstName,Emp_LastName,Emp_Email,Emp_Phone,Emp_work_Region,Emp_IncentiveType,Emp_Status,Role_Id) VALUES (@Emp_FirstName,@Emp_LastName,@Emp_Email,@Emp_Phone,@Emp_work_Region,@Emp_IncentiveType,@Emp_Status,@Role_Id)";
 
             DataTable table = new DataTable();
             string SQlDatasource = _configuration.GetConnectionString("CodeGravityDB");
             SqlDataReader myReader;
             using (SqlConnection mycon = new SqlConnection(SQlDatasource))
             {
-                mycon.Open();
-                using (SqlCommand mycommand = new SqlCommand(Query, mycon))
+                using (SqlCommand mycommand = new SqlCommand(query, mycon))
                 {
+                    mycommand.Parameters.AddWithValue("@Emp_FirstName", em.Emp_FirstName);
+                    mycommand.Parameters.AddWithValue("@Emp_LastName", em.Emp_LastName);
+                    mycommand.Parameters.AddWithValue("@Emp_Email", em.Emp_Email);
+                    mycommand.Parameters.AddWithValue("@Emp_Phone", em.Emp_Phone);
+
+                    mycommand.Parameters.AddWithValue("@Emp_work_Region", em.Emp_work_Region);
+                    mycommand.Parameters.AddWithValue("@Emp_IncentiveType", em.Emp_IncentiveType);
+                    mycommand.Parameters.AddWithValue("@Emp_Status", em.Emp_Status);
+                    mycommand.Parameters.AddWithValue("@Role_Id", em.Role_Id);
+                    mycon.Open();
                     myReader = mycommand.ExecuteReader();
                     table.Load(myReader);
                     myReader.Close();
@@ -63,7 +76,9 @@ namespace WebApi_New.Controllers
         public JsonResult put(cg_Employees em)
         {
             string Query = @"update [CG].[EmployeeMaster] set
-       [Emp_Name]='" + em.Emp_Name + @"'
+       [Emp_LastName]='" + em.Emp_LastName + @"'
+       [Emp_FirstName]='" + em.Emp_FirstName + @"'
+
       ,[Emp_Email]='" + em.Emp_Email + @"'
       ,[Emp_Phone]='" + em.Emp_Phone + @"'
       ,[Emp_work_Region]=" + em.Emp_work_Region + @"

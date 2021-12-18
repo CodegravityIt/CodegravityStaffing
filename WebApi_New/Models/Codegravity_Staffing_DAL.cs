@@ -61,7 +61,7 @@ namespace WebApi_New.Models
                 if (MarketingDetails != null && MarketingDetails.Rows.Count > 0)
                 {
 
-                    string strname = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(MarketingDetails.Rows[1]["Consult_id"])).FirstOrDefault().Emp_Name.ToString();
+                    string strname = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(MarketingDetails.Rows[1]["Consult_id"])).FirstOrDefault().Emp_FirstName.ToString();
                     listMarketing = (from DataRow dr in MarketingDetails.Rows
                                      select new cg_Marketing()
                                      {
@@ -69,7 +69,7 @@ namespace WebApi_New.Models
                                          Consult_Id = dr["Consult_id"] is DBNull ? 0 : Convert.ToInt32(dr["Consult_id"]),
                                          Consult_Name = listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(dr["Consult_id"])).FirstOrDefault().Consult_Full_Name.ToString(),
 
-                                         Assigned_Sales_Recruiter = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(dr["Assigned_Sales_Recruiter"])).FirstOrDefault().Emp_Name.ToString(),
+                                         Assigned_Sales_Recruiter = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(dr["Assigned_Sales_Recruiter"])).FirstOrDefault().Emp_FirstName.ToString(),
                                          Marketing_Tech = dr["Marketing_Tech"] is DBNull ? "" : Convert.ToString(dr["Marketing_Tech"]),
                                          Is_Open_To_All = dr["Is_Open_To_All"] is DBNull ? "" : Convert.ToString(dr["Is_Open_To_All"]),
                                          Marketing_Start_Date = dr["Marketing_Start_Date"] is DBNull ? "" : Convert.ToDateTime(dr["Marketing_Start_Date"]).ToShortDateString(),
@@ -153,13 +153,14 @@ namespace WebApi_New.Models
                                     select new cg_Employees()
                                     {
                                         Emp_Id = Convert.ToInt32(dr["Emp_Id"]),
-                                        Emp_Name = dr["Emp_FirstName"].ToString() + " " + dr["Emp_LastName"].ToString(),
+                                        Emp_FirstName = dr["Emp_FirstName"].ToString() + " " + dr["Emp_LastName"].ToString(),
                                         Emp_Email = dr["Emp_Email"].ToString(),
                                         Emp_Phone = dr["Emp_Phone"].ToString(),
-                                        Emp_work_Region = listCountry.Where(p => p.CountryId == Convert.ToInt32(dr["Emp_work_Region"])).FirstOrDefault().CountyName.ToString(),//dr["Emp_work_Region"].ToString(),
-                                        Emp_IncentiveType = dr["Emp_IncentiveType"].ToString(),
-                                        Emp_Status = dr["Emp_Status"].ToString(),
-                                        Role_Id = dr["Role_Id"].ToString()
+                                        //Emp_work_Region = listCountry.Where(p => p.CountryId == Convert.ToInt32(dr["Emp_work_Region"])).FirstOrDefault().CountyName.ToString(),//dr["Emp_work_Region"].ToString(),
+
+                                        //Emp_IncentiveType = dr["Emp_IncentiveType"],
+                                        //Emp_Status = dr["Emp_Status"].ToString(),
+                                        //Role_Id = dr["Role_Id"].ToString()
 
                                     }).ToList();
 
@@ -189,7 +190,7 @@ namespace WebApi_New.Models
                 if (PlacementDetails != null && PlacementDetails.Rows.Count > 0)
                 {
 
-                    string strname = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(PlacementDetails.Rows[1]["Consult_id"])).FirstOrDefault().Emp_Name.ToString();
+                    string strname = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(PlacementDetails.Rows[1]["Consult_id"])).FirstOrDefault().Emp_FirstName.ToString();
                     listMarketing = (from DataRow dr in PlacementDetails.Rows
                                      select new cg_Placement()
                                      {
@@ -197,7 +198,7 @@ namespace WebApi_New.Models
                                          Consult_id = dr["Consult_id"] is DBNull ? 0 : Convert.ToInt32(dr["Consult_id"]),
                                          Consult_Name = listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(dr["Consult_id"])).FirstOrDefault().Consult_First_Name.ToString() +
                                                         listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(dr["Consult_id"])).FirstOrDefault().Consult_Last_Name.ToString(),
-                                         Placed_Sales_Recruiter = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(dr["Placed_Sales_Recruiter"])).FirstOrDefault().Emp_Name.ToString(),
+                                         Placed_Sales_Recruiter = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(dr["Placed_Sales_Recruiter"])).FirstOrDefault().Emp_FirstName.ToString(),
                                          Placed_Tech = dr["Placed_Tech"] is DBNull ? "" : Convert.ToString(dr["Placed_Tech"]),
                                          PO_Date = dr["PO_Date"] is DBNull ? "" : Convert.ToDateTime(dr["PO_Date"]).ToShortDateString(),
                                          Project_Start_Date = dr["Project_Start_Date"] is DBNull ? "" : Convert.ToDateTime(dr["Project_Start_Date"]).ToShortDateString(),
