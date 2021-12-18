@@ -33,10 +33,10 @@ namespace WebApi_New.Models
     public class cg_Consultant
     {
         public int Consult_Id { get; set; }
-        
+
         public string Consult_First_Name { get; set; }
         public string Consult_Last_Name { get; set; }
-        
+
         public string Consult_Email { get; set; }
         public string Consult_Phone { get; set; }
         public string Consult_Address { get; set; }
@@ -46,7 +46,7 @@ namespace WebApi_New.Models
 
         public string Consult_DOB { get; set; }
         public string Consult_Full_Name { get; set; }
-        
+
     }
 
     public class cg_Employees
@@ -98,6 +98,31 @@ namespace WebApi_New.Models
 
     }
     public class cg_Technology
+    {
+
+        public int Id { get; set; }
+
+        public string Technology_Name { get; set; }
+
+        public string Technology_Description { get; set; }
+        public string Notes { get; set; }
+
+    }
+    public class cg_VisaType
+    {
+
+        public int Id { get; set; }
+
+        public string Visa_Name { get; set; }
+
+        public string Visa_Description { get; set; }
+        public string Notes { get; set; }
+        public string active { get; set; }
+
+
+    }
+
+    public class cg_Submissions
     {
 
         public int Id { get; set; }

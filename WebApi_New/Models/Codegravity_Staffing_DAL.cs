@@ -329,5 +329,50 @@ namespace WebApi_New.Models
             }
             return listConsult;
         }
+
+        public List<cg_VisaType> getVisatypeDetails()
+        {
+            DataTable dtvisatype = new DataTable();
+            List<cg_VisaType> listConsult = new List<cg_VisaType>();
+
+            try
+            {
+                string Query = @"[dbo].[Sp_Getvisatypedetails]";
+                string sqlDatasource = _configuration.GetConnectionString("CodeGravityDB");
+                SqlDataAdapter dbAdapater;
+                using (SqlConnection dbConnection = new SqlConnection(sqlDatasource))
+                {
+                    dbConnection.Open();
+                    using (SqlCommand dbcommand = new SqlCommand(Query, dbConnection))
+                    {
+                        dbcommand.CommandType = CommandType.StoredProcedure;
+                        //dbcommand.Parameters.AddWithValue("paraname", SqlDbType.NVarChar).Value = "";
+                        dbAdapater = new SqlDataAdapter(dbcommand);
+                        dbAdapater.Fill(dtvisatype);
+                        dbConnection.Close();
+                    }
+                }
+                if (dtvisatype != null && dtvisatype.Rows.Count > 0)
+                {
+                    listConsult = (from DataRow dr in dtvisatype.Rows
+                                   select new cg_VisaType()
+                                   {
+                                       Id = Convert.ToInt32(dr["Id"]),
+                                       Visa_Name = dr["Visa_Name"].ToString(),
+                                       Visa_Description = dr["Visa_Description"].ToString(),
+                                       Notes = dr["Notes"].ToString(),
+                                       active=dr["active"].ToString()
+
+                                   }).ToList();
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return null;
+            }
+            return listConsult;
+        }
     }
 }
