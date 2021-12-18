@@ -17,15 +17,15 @@ namespace WebApi_New.Models
             _configuration = configuration;
         }
 
-        public List<cg_Marketing> getMarketingDetails()
+
+
+        public DataTable dynamicTableData(string SpNameToExecute)
         {
-            DataTable MarketingDetails = new DataTable();
-            List<cg_Marketing> listMarketing = new List<cg_Marketing>();
-            List<cg_Employees> listemployee = getEmployeeDetails();
-            List<cg_Consultant> listConsultant = getConsultDetails();
+
+            DataTable dtDynamicData = new DataTable();
             try
             {
-                string Query = @"[dbo].[Sp_Getmarketingdetails]";
+                string Query = SpNameToExecute;
                 string sqlDatasource = _configuration.GetConnectionString("CodeGravityDB");
                 SqlDataAdapter dbAdapater;
                 using (SqlConnection dbConnection = new SqlConnection(sqlDatasource))
@@ -36,10 +36,28 @@ namespace WebApi_New.Models
                         dbcommand.CommandType = CommandType.StoredProcedure;
                         //dbcommand.Parameters.AddWithValue("paraname", SqlDbType.NVarChar).Value = "";
                         dbAdapater = new SqlDataAdapter(dbcommand);
-                        dbAdapater.Fill(MarketingDetails);
+                        dbAdapater.Fill(dtDynamicData);
                         dbConnection.Close();
                     }
                 }
+
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+            return dtDynamicData;
+        }
+        public List<cg_Marketing> getMarketingDetails()
+        {
+            DataTable MarketingDetails = new DataTable();
+            List<cg_Marketing> listMarketing = new List<cg_Marketing>();
+            List<cg_Employees> listemployee = getEmployeeDetails();
+            List<cg_Consultant> listConsultant = getConsultDetails();
+            try
+            {
+                MarketingDetails = dynamicTableData("[dbo].[Sp_Getmarketingdetails]");
                 if (MarketingDetails != null && MarketingDetails.Rows.Count > 0)
                 {
 
@@ -50,7 +68,7 @@ namespace WebApi_New.Models
                                          Id = dr["Id"] is DBNull ? 0 : Convert.ToInt32(dr["Id"]),
                                          Consult_Id = dr["Consult_id"] is DBNull ? 0 : Convert.ToInt32(dr["Consult_id"]),
                                          Consult_Name = listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(dr["Consult_id"])).FirstOrDefault().Consult_Full_Name.ToString(),
-                                                        
+
                                          Assigned_Sales_Recruiter = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(dr["Assigned_Sales_Recruiter"])).FirstOrDefault().Emp_Name.ToString(),
                                          Marketing_Tech = dr["Marketing_Tech"] is DBNull ? "" : Convert.ToString(dr["Marketing_Tech"]),
                                          Is_Open_To_All = dr["Is_Open_To_All"] is DBNull ? "" : Convert.ToString(dr["Is_Open_To_All"]),
@@ -87,21 +105,9 @@ namespace WebApi_New.Models
 
             try
             {
-                string Query = @"[dbo].[Sp_Getconsultantdetails]";
-                string sqlDatasource = _configuration.GetConnectionString("CodeGravityDB");
-                SqlDataAdapter dbAdapater;
-                using (SqlConnection dbConnection = new SqlConnection(sqlDatasource))
-                {
-                    dbConnection.Open();
-                    using (SqlCommand dbcommand = new SqlCommand(Query, dbConnection))
-                    {
-                        dbcommand.CommandType = CommandType.StoredProcedure;
-                        //dbcommand.Parameters.AddWithValue("paraname", SqlDbType.NVarChar).Value = "";
-                        dbAdapater = new SqlDataAdapter(dbcommand);
-                        dbAdapater.Fill(dtConsult);
-                        dbConnection.Close();
-                    }
-                }
+
+                dtConsult = dynamicTableData("[dbo].[Sp_Getconsultantdetails]");
+
                 if (dtConsult != null && dtConsult.Rows.Count > 0)
                 {
                     listConsult = (from DataRow dr in dtConsult.Rows
@@ -117,7 +123,7 @@ namespace WebApi_New.Models
                                        Consult_VisaStatus = dr["Consult_VisaStatus"].ToString(),
                                        Consult_Status = Convert.ToInt32(dr["Consult_Status"]),
                                        Consult_DOB = dr["Consult_DOB"].ToString(),
-                                       Consult_Full_Name= dr["Consult_First_Name"].ToString()+" "+dr["Consult_Last_Name"].ToString()
+                                       Consult_Full_Name = dr["Consult_First_Name"].ToString() + " " + dr["Consult_Last_Name"].ToString()
                                    }).ToList();
 
                 }
@@ -138,36 +144,24 @@ namespace WebApi_New.Models
 
             try
             {
-                string Query = @"[dbo].[Sp_GetEmployeeDetails]";
-                string sqlDatasource = _configuration.GetConnectionString("CodeGravityDB");
-                SqlDataAdapter dbAdapater;
-                using (SqlConnection dbConnection = new SqlConnection(sqlDatasource))
-                {
-                    dbConnection.Open();
-                    using (SqlCommand dbcommand = new SqlCommand(Query, dbConnection))
-                    {
-                        dbcommand.CommandType = CommandType.StoredProcedure;
-                        //dbcommand.Parameters.AddWithValue("paraname", SqlDbType.NVarChar).Value = "";
-                        dbAdapater = new SqlDataAdapter(dbcommand);
-                        dbAdapater.Fill(dtRecruiters);
-                        dbConnection.Close();
-                    }
-                }
+                dtRecruiters = dynamicTableData("[dbo].[Sp_GetEmployeeDetails]");
+
+
                 if (dtRecruiters != null && dtRecruiters.Rows.Count > 0)
                 {
                     listemployee = (from DataRow dr in dtRecruiters.Rows
-                                   select new cg_Employees()
-                                   {
-                                       Emp_Id = Convert.ToInt32(dr["Emp_Id"]),
-                                       Emp_Name = dr["Emp_FirstName"].ToString()+" "+dr["Emp_LastName"].ToString(),
-                                       Emp_Email = dr["Emp_Email"].ToString(),
-                                       Emp_Phone = dr["Emp_Phone"].ToString(),
-                                       Emp_work_Region = listCountry.Where(p => p.CountryId == Convert.ToInt32(dr["Emp_work_Region"])).FirstOrDefault().CountyName.ToString(),//dr["Emp_work_Region"].ToString(),
-                                       Emp_IncentiveType = dr["Emp_IncentiveType"].ToString(),
-                                       Emp_Status = dr["Emp_Status"].ToString(),
-                                       Role_Id = dr["Role_Id"].ToString()
+                                    select new cg_Employees()
+                                    {
+                                        Emp_Id = Convert.ToInt32(dr["Emp_Id"]),
+                                        Emp_Name = dr["Emp_FirstName"].ToString() + " " + dr["Emp_LastName"].ToString(),
+                                        Emp_Email = dr["Emp_Email"].ToString(),
+                                        Emp_Phone = dr["Emp_Phone"].ToString(),
+                                        Emp_work_Region = listCountry.Where(p => p.CountryId == Convert.ToInt32(dr["Emp_work_Region"])).FirstOrDefault().CountyName.ToString(),//dr["Emp_work_Region"].ToString(),
+                                        Emp_IncentiveType = dr["Emp_IncentiveType"].ToString(),
+                                        Emp_Status = dr["Emp_Status"].ToString(),
+                                        Role_Id = dr["Role_Id"].ToString()
 
-                                   }).ToList();
+                                    }).ToList();
 
                 }
             }
@@ -188,21 +182,10 @@ namespace WebApi_New.Models
             List<cg_Consultant> listConsultant = getConsultDetails();
             try
             {
-                string Query = @"[dbo].[Sp_Getplacementdetails]";
-                string sqlDatasource = _configuration.GetConnectionString("CodeGravityDB");
-                SqlDataAdapter dbAdapater;
-                using (SqlConnection dbConnection = new SqlConnection(sqlDatasource))
-                {
-                    dbConnection.Open();
-                    using (SqlCommand dbcommand = new SqlCommand(Query, dbConnection))
-                    {
-                        dbcommand.CommandType = CommandType.StoredProcedure;
-                        //dbcommand.Parameters.AddWithValue("paraname", SqlDbType.NVarChar).Value = "";
-                        dbAdapater = new SqlDataAdapter(dbcommand);
-                        dbAdapater.Fill(PlacementDetails);
-                        dbConnection.Close();
-                    }
-                }
+
+                PlacementDetails = dynamicTableData("[dbo].[Sp_Getplacementdetails]");
+
+
                 if (PlacementDetails != null && PlacementDetails.Rows.Count > 0)
                 {
 
@@ -212,7 +195,7 @@ namespace WebApi_New.Models
                                      {
                                          Id = dr["Id"] is DBNull ? 0 : Convert.ToInt32(dr["Id"]),
                                          Consult_id = dr["Consult_id"] is DBNull ? 0 : Convert.ToInt32(dr["Consult_id"]),
-                                         Consult_Name = listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(dr["Consult_id"])).FirstOrDefault().Consult_First_Name.ToString()+
+                                         Consult_Name = listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(dr["Consult_id"])).FirstOrDefault().Consult_First_Name.ToString() +
                                                         listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(dr["Consult_id"])).FirstOrDefault().Consult_Last_Name.ToString(),
                                          Placed_Sales_Recruiter = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(dr["Placed_Sales_Recruiter"])).FirstOrDefault().Emp_Name.ToString(),
                                          Placed_Tech = dr["Placed_Tech"] is DBNull ? "" : Convert.ToString(dr["Placed_Tech"]),
@@ -249,21 +232,9 @@ namespace WebApi_New.Models
 
             try
             {
-                string Query = @"[dbo].[Sp_Getcountrydetails]";
-                string sqlDatasource = _configuration.GetConnectionString("CodeGravityDB");
-                SqlDataAdapter dbAdapater;
-                using (SqlConnection dbConnection = new SqlConnection(sqlDatasource))
-                {
-                    dbConnection.Open();
-                    using (SqlCommand dbcommand = new SqlCommand(Query, dbConnection))
-                    {
-                        dbcommand.CommandType = CommandType.StoredProcedure;
-                        //dbcommand.Parameters.AddWithValue("paraname", SqlDbType.NVarChar).Value = "";
-                        dbAdapater = new SqlDataAdapter(dbcommand);
-                        dbAdapater.Fill(dtWorkregion);
-                        dbConnection.Close();
-                    }
-                }
+                dtWorkregion = dynamicTableData("[dbo].[Sp_Getcountrydetails]");
+
+
                 if (dtWorkregion != null && dtWorkregion.Rows.Count > 0)
                 {
                     listConsult = (from DataRow dr in dtWorkregion.Rows
@@ -292,21 +263,9 @@ namespace WebApi_New.Models
 
             try
             {
-                string Query = @"[dbo].[Sp_Gettechnologydetails]";
-                string sqlDatasource = _configuration.GetConnectionString("CodeGravityDB");
-                SqlDataAdapter dbAdapater;
-                using (SqlConnection dbConnection = new SqlConnection(sqlDatasource))
-                {
-                    dbConnection.Open();
-                    using (SqlCommand dbcommand = new SqlCommand(Query, dbConnection))
-                    {
-                        dbcommand.CommandType = CommandType.StoredProcedure;
-                        //dbcommand.Parameters.AddWithValue("paraname", SqlDbType.NVarChar).Value = "";
-                        dbAdapater = new SqlDataAdapter(dbcommand);
-                        dbAdapater.Fill(dtTechnology);
-                        dbConnection.Close();
-                    }
-                }
+                dtTechnology = dynamicTableData("[dbo].[Sp_Gettechnologydetails]");
+
+
                 if (dtTechnology != null && dtTechnology.Rows.Count > 0)
                 {
                     listConsult = (from DataRow dr in dtTechnology.Rows
@@ -315,7 +274,7 @@ namespace WebApi_New.Models
                                        Id = Convert.ToInt32(dr["Id"]),
                                        Technology_Name = dr["Technology_Name"].ToString(),
                                        Technology_Description = dr["Technology_Description"].ToString(),
-                                       Notes=dr["Notes"].ToString()
+                                       Notes = dr["Notes"].ToString()
 
 
                                    }).ToList();
@@ -337,21 +296,9 @@ namespace WebApi_New.Models
 
             try
             {
-                string Query = @"[dbo].[Sp_Getvisatypedetails]";
-                string sqlDatasource = _configuration.GetConnectionString("CodeGravityDB");
-                SqlDataAdapter dbAdapater;
-                using (SqlConnection dbConnection = new SqlConnection(sqlDatasource))
-                {
-                    dbConnection.Open();
-                    using (SqlCommand dbcommand = new SqlCommand(Query, dbConnection))
-                    {
-                        dbcommand.CommandType = CommandType.StoredProcedure;
-                        //dbcommand.Parameters.AddWithValue("paraname", SqlDbType.NVarChar).Value = "";
-                        dbAdapater = new SqlDataAdapter(dbcommand);
-                        dbAdapater.Fill(dtvisatype);
-                        dbConnection.Close();
-                    }
-                }
+                dtvisatype = dynamicTableData("[dbo].[Sp_Getvisatypedetails]");
+
+
                 if (dtvisatype != null && dtvisatype.Rows.Count > 0)
                 {
                     listConsult = (from DataRow dr in dtvisatype.Rows
@@ -361,7 +308,7 @@ namespace WebApi_New.Models
                                        Visa_Name = dr["Visa_Name"].ToString(),
                                        Visa_Description = dr["Visa_Description"].ToString(),
                                        Notes = dr["Notes"].ToString(),
-                                       active=dr["active"].ToString()
+                                       active = dr["active"].ToString()
 
                                    }).ToList();
 
@@ -374,5 +321,72 @@ namespace WebApi_New.Models
             }
             return listConsult;
         }
+
+        public List<cg_Incentives> getIncentivetypeDetails()
+        {
+            DataTable dtincentivetype = new DataTable();
+            List<cg_Incentives> listIncentives = new List<cg_Incentives>();
+
+            try
+            {
+                dtincentivetype = dynamicTableData("[dbo].[Sp_Getincentivedetails]");
+
+
+                if (dtincentivetype != null && dtincentivetype.Rows.Count > 0)
+                {
+                    listIncentives = (from DataRow dr in dtincentivetype.Rows
+                                   select new cg_Incentives()
+                                   {
+                                       Incentive_Id = Convert.ToInt32(dr["Incentive_Id"]),
+                                       Incentive_Amount = dr["Incentive_Amount"].ToString(),
+                                       Incentive_Currency = dr["Incentive_Currency"].ToString(),
+                                       Incentive_Type = dr["Incentive_Type"].ToString(),
+                                       Incentive_Country = dr["Incentive_Country"].ToString(),
+                                       Incentive_Description = dr["Incentive_Description"].ToString()
+
+                                   }).ToList();
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return null;
+            }
+            return listIncentives;
+        }
+
+        public List<cg_Entitlement> getEntitlementDetails()
+        {
+            DataTable dtentitlement = new DataTable();
+            List<cg_Entitlement> listEntitlement = new List<cg_Entitlement>();
+
+            try
+            {
+                dtentitlement = dynamicTableData("[dbo].[Sp_Getentitlementdetails]");
+
+
+                if (dtentitlement != null && dtentitlement.Rows.Count > 0)
+                {
+                    listEntitlement = (from DataRow dr in dtentitlement.Rows
+                                      select new cg_Entitlement()
+                                      {
+                                          Entit_Id = Convert.ToInt32(dr["Entit_Id"]),
+                                          Entit_Name = dr["Entit_Name"].ToString(),
+                                          Entit_Desc = dr["Entit_Desc"].ToString(),
+                                          Entit_status = dr["Entit_status"].ToString(),
+                                          Notes = dr["Notes"].ToString()
+                                      }).ToList();
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return null;
+            }
+            return listEntitlement;
+        }
+
     }
 }

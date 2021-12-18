@@ -122,6 +122,7 @@ namespace WebApi_New.Models
 
     }
 
+
     public class cg_Submissions
     {
 
@@ -132,5 +133,47 @@ namespace WebApi_New.Models
         public string Technology_Description { get; set; }
         public string Notes { get; set; }
 
+    }
+    public class cg_County
+    {
+
+        public int CountryId { get; set; }
+
+        public string CountyName { get; set; }
+
+        public string Country_Description { get; set; }
+        public string Notes { get; set; }
+
+    }
+
+    public class cg_Incentives
+    {
+
+        public int Incentive_Id { get; set; }
+
+        public string Incentive_Amount { get; set; }
+
+        public string Incentive_Currency { get; set; }
+        public string Incentive_Type
+        { get; set; }
+
+        public string Incentive_Country
+        { get; set; }
+        public string Incentive_Description { get; set; }
+
+    }
+
+    public class cg_Entitlement
+    {
+        
+        public int Entit_Id { get; set; }
+
+        public string Entit_Name { get; set; }
+
+        public string Entit_Desc { get; set; }
+        public string Entit_status { get; set; }
+
+        public string Notes  { get; set; }
+        
     }
 }
