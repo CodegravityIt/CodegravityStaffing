@@ -21,7 +21,7 @@ namespace WebApi_New.Models
         }
        
 
-        public List<cg_Consultant> GetConsultDetails()
+        public List<cg_Consultant> GetConsultDetails( )
         {
             List<cg_Consultant> listConsult = new List<cg_Consultant>();
 
