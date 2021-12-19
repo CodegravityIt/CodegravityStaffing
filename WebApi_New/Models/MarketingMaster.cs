@@ -19,7 +19,7 @@ namespace WebApi_New.Models
             _configuration = configuration;
             objGG_Dal = new Codegravity_Staffing_DAL(_configuration);
         }
-       
+
 
         public List<cg_Marketing> getMarketingDetails()
         {
@@ -54,6 +54,24 @@ namespace WebApi_New.Models
                 //throw;
             }
             return null;
+        }
+
+
+
+        public bool AddNewMarketingAssignment(cg_Marketing Objmarketing)
+        {
+            bool Isrecordadded = false;
+
+            try
+            {
+                Isrecordadded = objGG_Dal.AddNewMarketingAssignment(Objmarketing);
+            }
+            catch (Exception ex)
+            {
+                Isrecordadded = false;
+            }
+            return Isrecordadded;
+
         }
 
 

@@ -69,7 +69,7 @@ namespace WebApi_New.Models
                                          Consult_Id = dr["Consult_id"] is DBNull ? 0 : Convert.ToInt32(dr["Consult_id"]),
                                          Consult_Name = listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(dr["Consult_id"])).FirstOrDefault().Consult_Full_Name.ToString(),
 
-                                         Assigned_Sales_Recruiter = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(dr["Assigned_Sales_Recruiter"])).FirstOrDefault().Emp_FirstName.ToString(),
+                                         Assigned_Sales_Recruiter = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(dr["Assigned_Sales_Recruiter"])).FirstOrDefault().Emp_FullName.ToString(),
                                          Marketing_Tech = dr["Marketing_Tech"] is DBNull ? "" : Convert.ToString(dr["Marketing_Tech"]),
                                          Is_Open_To_All = dr["Is_Open_To_All"] is DBNull ? "" : Convert.ToString(dr["Is_Open_To_All"]),
                                          Marketing_Start_Date = dr["Marketing_Start_Date"] is DBNull ? "" : Convert.ToDateTime(dr["Marketing_Start_Date"]).ToShortDateString(),
@@ -152,15 +152,19 @@ namespace WebApi_New.Models
                     listemployee = (from DataRow dr in dtRecruiters.Rows
                                     select new cg_Employees()
                                     {
-                                        Emp_Id = Convert.ToInt32(dr["Emp_Id"]),
-                                        Emp_FirstName = dr["Emp_FirstName"].ToString() + " " + dr["Emp_LastName"].ToString(),
-                                        Emp_Email = dr["Emp_Email"].ToString(),
-                                        Emp_Phone = dr["Emp_Phone"].ToString(),
-                                        //Emp_work_Region = listCountry.Where(p => p.CountryId == Convert.ToInt32(dr["Emp_work_Region"])).FirstOrDefault().CountyName.ToString(),//dr["Emp_work_Region"].ToString(),
+                                        Emp_Id = dr["Emp_Id"] is DBNull ? 0 : Convert.ToInt32(dr["Emp_Id"]),
+                                        Emp_FirstName = dr["Emp_FirstName"] is DBNull ? "" : dr["Emp_FirstName"].ToString(),
+                                        Emp_LastName = dr["Emp_LastName"] is DBNull ? "" : dr["Emp_LastName"].ToString(),
+                                        Emp_Email = dr["Emp_Email"] is DBNull ? "" : dr["Emp_Email"].ToString(),
+                                        Emp_Phone = dr["Emp_Phone"] is DBNull ? "" : dr["Emp_Phone"].ToString(),
+                                        Emp_work_Region = dr["Emp_work_Region"] is DBNull ? 0 : Convert.ToInt32(dr["Emp_work_Region"]),
+                                        Emp_IncentiveType = dr["Emp_IncentiveType"] is DBNull ? 0 : Convert.ToInt32(dr["Emp_IncentiveType"]),
+                                        Emp_Status = dr["Emp_Status"] is DBNull ? 0 : Convert.ToInt32(dr["Emp_Status"]),
+                                        Role_Id = dr["Role_Id"] is DBNull ? 0 : Convert.ToInt32(dr["Role_Id"]),
+                                        Emp_Country = listCountry.Where(p => p.CountryId == Convert.ToInt32(dr["Emp_work_Region"])).FirstOrDefault().CountyName.ToString(),
+                                        Emp_FullName = dr["Emp_FirstName"].ToString() + " " + dr["Emp_LastName"].ToString()
 
-                                        //Emp_IncentiveType = dr["Emp_IncentiveType"],
-                                        //Emp_Status = dr["Emp_Status"].ToString(),
-                                        //Role_Id = dr["Role_Id"].ToString()
+
 
                                     }).ToList();
 
@@ -336,16 +340,16 @@ namespace WebApi_New.Models
                 if (dtincentivetype != null && dtincentivetype.Rows.Count > 0)
                 {
                     listIncentives = (from DataRow dr in dtincentivetype.Rows
-                                   select new cg_Incentives()
-                                   {
-                                       Incentive_Id = Convert.ToInt32(dr["Incentive_Id"]),
-                                       Incentive_Amount = dr["Incentive_Amount"].ToString(),
-                                       Incentive_Currency = dr["Incentive_Currency"].ToString(),
-                                       Incentive_Type = dr["Incentive_Type"].ToString(),
-                                       Incentive_Country = dr["Incentive_Country"].ToString(),
-                                       Incentive_Description = dr["Incentive_Description"].ToString()
+                                      select new cg_Incentives()
+                                      {
+                                          Incentive_Id = Convert.ToInt32(dr["Incentive_Id"]),
+                                          Incentive_Amount = dr["Incentive_Amount"].ToString(),
+                                          Incentive_Currency = dr["Incentive_Currency"].ToString(),
+                                          Incentive_Type = dr["Incentive_Type"].ToString(),
+                                          Incentive_Country = dr["Incentive_Country"].ToString(),
+                                          Incentive_Description = dr["Incentive_Description"].ToString()
 
-                                   }).ToList();
+                                      }).ToList();
 
                 }
             }
@@ -370,14 +374,14 @@ namespace WebApi_New.Models
                 if (dtentitlement != null && dtentitlement.Rows.Count > 0)
                 {
                     listEntitlement = (from DataRow dr in dtentitlement.Rows
-                                      select new cg_Entitlement()
-                                      {
-                                          Entit_Id = Convert.ToInt32(dr["Entit_Id"]),
-                                          Entit_Name = dr["Entit_Name"].ToString(),
-                                          Entit_Desc = dr["Entit_Desc"].ToString(),
-                                          Entit_status = dr["Entit_status"].ToString(),
-                                          Notes = dr["Notes"].ToString()
-                                      }).ToList();
+                                       select new cg_Entitlement()
+                                       {
+                                           Entit_Id = Convert.ToInt32(dr["Entit_Id"]),
+                                           Entit_Name = dr["Entit_Name"].ToString(),
+                                           Entit_Desc = dr["Entit_Desc"].ToString(),
+                                           Entit_status = dr["Entit_status"].ToString(),
+                                           Notes = dr["Notes"].ToString()
+                                       }).ToList();
 
                 }
             }
@@ -387,6 +391,93 @@ namespace WebApi_New.Models
                 return null;
             }
             return listEntitlement;
+        }
+
+        public bool AddEmployeeDetails(cg_Employees em)
+        {
+            DataTable dtRecruiters = new DataTable();
+            bool result = false;
+
+            try
+            {
+                String query = "INSERT INTO [CG].[EmployeeMaster] (Emp_FirstName,Emp_LastName,Emp_Email,Emp_Phone,Emp_work_Region,Emp_IncentiveType,Emp_Status,Role_Id) VALUES (@Emp_FirstName,@Emp_LastName,@Emp_Email,@Emp_Phone,@Emp_work_Region,@Emp_IncentiveType,@Emp_Status,@Role_Id)";
+
+                DataTable table = new DataTable();
+                string SQlDatasource = _configuration.GetConnectionString("CodeGravityDB");
+                SqlDataReader myReader;
+                using (SqlConnection mycon = new SqlConnection(SQlDatasource))
+                {
+                    using (SqlCommand mycommand = new SqlCommand(query, mycon))
+                    {
+                        mycommand.Parameters.AddWithValue("@Emp_FirstName", em.Emp_FirstName);
+                        mycommand.Parameters.AddWithValue("@Emp_LastName", em.Emp_LastName);
+                        mycommand.Parameters.AddWithValue("@Emp_Email", em.Emp_Email);
+                        mycommand.Parameters.AddWithValue("@Emp_Phone", em.Emp_Phone);
+
+                        mycommand.Parameters.AddWithValue("@Emp_work_Region", em.Emp_work_Region);
+                        mycommand.Parameters.AddWithValue("@Emp_IncentiveType", em.Emp_IncentiveType);
+                        mycommand.Parameters.AddWithValue("@Emp_Status", em.Emp_Status);
+                        mycommand.Parameters.AddWithValue("@Role_Id", em.Role_Id);
+                        mycon.Open();
+                        myReader = mycommand.ExecuteReader();
+                        // table.Load(myReader.af);
+                        if (myReader.RecordsAffected > 0)
+                            result = true;
+                        myReader.Close();
+                        mycon.Close();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return false;
+            }
+            return result;
+        }
+
+        public bool AddNewMarketingAssignment(cg_Marketing em)
+        {
+            DataTable dtRecruiters = new DataTable();
+            bool result = false;
+
+            try
+            {
+                String query = "INSERT INTO [CG].[Consultant_Marketing] (Consult_id,Assigned_Sales_Recruiter,Marketing_Tech,Is_Open_To_All,Marketing_Start_Date,Marketing_End_Date,Visa_Status,Notes) VALUES " +
+                                                                       "(@Consult_id,@Assigned_Sales_Recruiter,@Marketing_Tech,@Is_Open_To_All,@Marketing_Start_Date,@Marketing_End_Date,@Visa_Status,@Notes)";
+
+                DataTable table = new DataTable();
+                string SQlDatasource = _configuration.GetConnectionString("CodeGravityDB");
+                SqlDataReader myReader;
+                using (SqlConnection mycon = new SqlConnection(SQlDatasource))
+                {
+                    using (SqlCommand mycommand = new SqlCommand(query, mycon))
+                    {
+                        mycommand.Parameters.AddWithValue("@Consult_id", em.Consult_Id);
+                        mycommand.Parameters.AddWithValue("@Assigned_Sales_Recruiter", em.Assigned_Sales_Recruiter);
+                        mycommand.Parameters.AddWithValue("@Marketing_Tech", em.Marketing_Tech);
+                        mycommand.Parameters.AddWithValue("@Is_Open_To_All", em.Is_Open_To_All);
+
+                        mycommand.Parameters.AddWithValue("@Marketing_Start_Date", em.Marketing_Start_Date);
+                        mycommand.Parameters.AddWithValue("@Marketing_End_Date", em.Marketing_End_Date);
+                        mycommand.Parameters.AddWithValue("@Visa_Status", em.Visa_Status);
+                        mycommand.Parameters.AddWithValue("@Notes", em.Notes);
+                        mycon.Open();
+                        myReader = mycommand.ExecuteReader();
+                        // table.Load(myReader.af);
+                        if (myReader.RecordsAffected > 0)
+                            result = true;
+                        myReader.Close();
+                        mycon.Close();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return false;
+            }
+            return result;
         }
 
     }

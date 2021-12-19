@@ -26,16 +26,20 @@ namespace WebApi_New.Controllers
         [HttpGet]
         public JsonResult Get()
         {
-           
+
             return new JsonResult(ObjCM.getMarketingDetails());
         }
-        //[HttpGet]
-        //public JsonResult GetTecnologyNames()
-        //{
-        //    //DataTable result = ObjCM.getMarketingDetails();
-        //    return new JsonResult(ObjCM.getTechnologyNames());
-        //}
 
-        
+        [HttpPost]
+        public JsonResult post(cg_Marketing objMarket)
+        {
+            bool result = ObjCM.AddNewMarketingAssignment(objMarket);
+
+            if (result)
+                return new JsonResult("New market assignment Added Succfully");
+            else
+                return new JsonResult("Failed to add New market assignment ..");
+        }
+
     }
 }

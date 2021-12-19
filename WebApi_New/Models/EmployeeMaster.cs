@@ -31,6 +31,21 @@ namespace WebApi_New.Models
             return listEmployee;
 
         }
+        public bool AddEmployeeDetails(cg_Employees cg_emp)
+        {
+           bool Isemployeeadded=false;
+
+            try
+            {
+                Isemployeeadded = objGG_Dal.AddEmployeeDetails(cg_emp);
+            }
+            catch (Exception ex)
+            {
+                Isemployeeadded = false;
+            }
+            return Isemployeeadded;
+
+        }
 
         public List<cg_WorkRegion> GetworkRegionList()
         {

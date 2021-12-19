@@ -61,6 +61,8 @@ namespace WebApi_New.Models
         public int Emp_IncentiveType { get; set; }
         public int Emp_Status { get; set; }
         public int Role_Id { get; set; }
+        public string  Emp_Country { get; set; }
+        public string Emp_FullName { get; set; }
 
     }
 
