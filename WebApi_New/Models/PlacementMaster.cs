@@ -27,5 +27,22 @@ namespace WebApi_New.Models
             }
             return dtConsult;
         }
+
+        public bool AddNewPlacement(cg_Placement Objmarketing)
+        {
+            bool Isrecordadded = false;
+
+            try
+            {
+                Isrecordadded = objGG_Dal.AddNewplacementAssignment(Objmarketing);
+            }
+            catch (Exception ex)
+            {
+                Isrecordadded = false;
+            }
+            return Isrecordadded;
+
+        }
+
     }
 }

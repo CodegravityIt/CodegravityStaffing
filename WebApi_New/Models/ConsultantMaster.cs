@@ -19,9 +19,9 @@ namespace WebApi_New.Models
             _configuration = configuration;
             objGG_Dal = new Codegravity_Staffing_DAL(_configuration);
         }
-       
 
-        public List<cg_Consultant> GetConsultDetails( )
+
+        public List<cg_Consultant> GetConsultDetails()
         {
             List<cg_Consultant> listConsult = new List<cg_Consultant>();
 
@@ -35,6 +35,20 @@ namespace WebApi_New.Models
             return listConsult;
 
         }
+        //public List<cg_Consultant> GetConsultDetails(int Consult_Status)
+        //{
+        //    List<cg_Consultant> listConsult = new List<cg_Consultant>();
+
+        //    try
+        //    {
+        //        listConsult = objGG_Dal.getConsultDetails(Consult_Status);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //    }
+        //    return listConsult;
+
+        //}
         public DataTable AddConsultDetails(cg_Consultant Objcm)
         {
             DataTable dtConsult = new DataTable();

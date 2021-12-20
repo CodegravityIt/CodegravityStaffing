@@ -54,7 +54,10 @@ namespace WebApi_New.Models
             DataTable MarketingDetails = new DataTable();
             List<cg_Marketing> listMarketing = new List<cg_Marketing>();
             List<cg_Employees> listemployee = getEmployeeDetails();
+            // List<cg_Consultant> listConsultant = getConsultDetails(1);
             List<cg_Consultant> listConsultant = getConsultDetails();
+
+            List<cg_Technology> listTech = getTechnologyDetails();
             try
             {
                 MarketingDetails = dynamicTableData("[dbo].[Sp_Getmarketingdetails]");
@@ -62,32 +65,53 @@ namespace WebApi_New.Models
                 {
 
                     string strname = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(MarketingDetails.Rows[1]["Consult_id"])).FirstOrDefault().Emp_FirstName.ToString();
-                    listMarketing = (from DataRow dr in MarketingDetails.Rows
-                                     select new cg_Marketing()
-                                     {
-                                         Id = dr["Id"] is DBNull ? 0 : Convert.ToInt32(dr["Id"]),
-                                         Consult_Id = dr["Consult_id"] is DBNull ? 0 : Convert.ToInt32(dr["Consult_id"]),
-                                         Consult_Name = listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(dr["Consult_id"])).FirstOrDefault().Consult_Full_Name.ToString(),
 
-                                         Assigned_Sales_Recruiter = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(dr["Assigned_Sales_Recruiter"])).FirstOrDefault().Emp_FullName.ToString(),
-                                         Marketing_Tech = dr["Marketing_Tech"] is DBNull ? "" : Convert.ToString(dr["Marketing_Tech"]),
-                                         Is_Open_To_All = dr["Is_Open_To_All"] is DBNull ? "" : Convert.ToString(dr["Is_Open_To_All"]),
-                                         Marketing_Start_Date = dr["Marketing_Start_Date"] is DBNull ? "" : Convert.ToDateTime(dr["Marketing_Start_Date"]).ToShortDateString(),
-                                         Submitted_Vendor = dr["Submited_Vendor"] is DBNull ? "" : Convert.ToString(dr["Submited_Vendor"]),
-                                         End_Client_Name = dr["End_Client_Name"] is DBNull ? "" : Convert.ToString(dr["End_Client_Name"]),
-                                         Rate_confirmation = dr["Rate_confirmation"] is DBNull ? "" : Convert.ToString(dr["Rate_confirmation"]),
-                                         Bill_Rate = dr["Bill_Rate"] is DBNull ? "" : Convert.ToString(dr["Bill_Rate"]),
-                                         Assignment_date = dr["Assignment_date"] is DBNull ? "" : Convert.ToDateTime(dr["Assignment_date"]).ToShortDateString(),
-                                         Assignment_status = dr["Assignment_status"] is DBNull ? "" : Convert.ToString(dr["Assignment_status"]),
-                                         Interview_Schedudule_Date = dr["Interview_Schedudule_Date"] is DBNull ? "" : Convert.ToString(dr["Interview_Schedudule_Date"]),
-                                         Interview_Status = dr["Interview_Status"] is DBNull ? "" : Convert.ToString(dr["Interview_Status"]),
-                                         Visa_Status = dr["Visa_Status"] is DBNull ? "" : Convert.ToString(dr["Visa_Status"]),
-                                         Marketing_Status = dr["Marketing_Status"] is DBNull ? "" : Convert.ToString(dr["Marketing_Status"]),
-                                         Marketing_End_Date = dr["Marketing_End_Date"] is DBNull ? "" : Convert.ToDateTime(dr["Marketing_End_Date"]).ToShortDateString(),
-                                         Notes = dr["Notes"] is DBNull ? "" : Convert.ToString(dr["Notes"])
+                    for (int i = 0; i < MarketingDetails.Rows.Count; i++)
+                    {
+                        cg_Marketing obj = new cg_Marketing();
+                        obj.Id = Convert.ToInt32(MarketingDetails.Rows[i]["Id"]);
+                        obj.Consult_Id = Convert.ToInt32(MarketingDetails.Rows[i]["Consult_Id"]);
+                        //obj.Consult_Name = Convert.ToString(MarketingDetails.Rows[i]["Consult_Name"]);
+                        obj.Assigned_Sales_Recruiter = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(MarketingDetails.Rows[i]["Assigned_Sales_Recruiter"])).FirstOrDefault().Emp_FullName.ToString();
+                        obj.Is_Open_To_All = Convert.ToString(MarketingDetails.Rows[i]["Is_Open_To_All"]);
+                        obj.Marketing_Start_Date = Convert.ToString(MarketingDetails.Rows[i]["Marketing_Start_Date"]);
+                        obj.Visa_Status = Convert.ToString(MarketingDetails.Rows[i]["Visa_Status"]);
+                        obj.Marketing_Status = Convert.ToString(MarketingDetails.Rows[i]["Marketing_Status"]);
+                        obj.Notes = Convert.ToString(MarketingDetails.Rows[i]["Notes"]);
+                        obj.Consult_Name = listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(MarketingDetails.Rows[i]["Consult_id"])).FirstOrDefault().Consult_Full_Name.ToString();
+                        obj.Marketing_Tech = listTech.Where(p => p.Id == Convert.ToInt32(MarketingDetails.Rows[i]["Marketing_Tech"])).FirstOrDefault().Technology_Name.ToString();//dr["Marketing_Tech"] is DBNull ? "" : Convert.ToString(dr["Marketing_Tech"]),
 
-                                     }).ToList();
 
+                        listMarketing.Add(obj);
+                    }
+                    #region commented
+                    //listMarketing = (from DataRow dr in MarketingDetails.Rows
+                    //                 select new cg_Marketing()
+                    //                 {
+                    //                     Id = dr["Id"] is DBNull ? 0 : Convert.ToInt32(dr["Id"]),
+                    //                     Consult_Id = dr["Consult_id"] is DBNull ? 0 : Convert.ToInt32(dr["Consult_id"]),
+                    //                     Consult_Name = listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(dr["Consult_id"])).FirstOrDefault().Consult_Full_Name.ToString(),
+                    //                     Assigned_Sales_Recruiter = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(dr["Assigned_Sales_Recruiter"])).FirstOrDefault().Emp_FullName.ToString(),
+                    //                     Marketing_Tech = dr["Marketing_Tech"] is DBNull ? "0" : listTech.Where(p => p.Id == Convert.ToInt32(dr["Marketing_Tech"])).FirstOrDefault().Technology_Name.ToString(),//dr["Marketing_Tech"] is DBNull ? "" : Convert.ToString(dr["Marketing_Tech"]),
+                    //                     Is_Open_To_All = dr["Is_Open_To_All"] is DBNull ? "" : Convert.ToString(dr["Is_Open_To_All"]),
+                    //                     Marketing_Start_Date = dr["Marketing_Start_Date"] is DBNull ? "" : Convert.ToDateTime(dr["Marketing_Start_Date"]).ToShortDateString(),
+                    //                     Visa_Status = dr["Visa_Status"] is DBNull ? "" : Convert.ToString(dr["Visa_Status"]),
+                    //                     Marketing_Status = dr["Marketing_Status"] is DBNull ? "" : Convert.ToString(dr["Marketing_Status"]),
+                    //                     Notes = dr["Notes"] is DBNull ? "" : Convert.ToString(dr["Notes"])
+
+
+                    //                     //Submitted_Vendor = dr["Submited_Vendor"] is DBNull ? "" : Convert.ToString(dr["Submited_Vendor"]),
+                    //                     // End_Client_Name = dr["End_Client_Name"] is DBNull ? "" : Convert.ToString(dr["End_Client_Name"]),
+                    //                     //Rate_confirmation = dr["Rate_confirmation"] is DBNull ? "" : Convert.ToString(dr["Rate_confirmation"]),
+                    //                     //Bill_Rate = dr["Bill_Rate"] is DBNull ? "" : Convert.ToString(dr["Bill_Rate"]),
+                    //                     //Assignment_date = dr["Assignment_date"] is DBNull ? "" : Convert.ToDateTime(dr["Assignment_date"]).ToShortDateString(),
+                    //                     //Assignment_status = dr["Assignment_status"] is DBNull ? "" : Convert.ToString(dr["Assignment_status"]),
+                    //                     //Interview_Schedudule_Date = dr["Interview_Schedudule_Date"] is DBNull ? "" : Convert.ToString(dr["Interview_Schedudule_Date"]),
+                    //                     //Interview_Status = dr["Interview_Status"] is DBNull ? "" : Convert.ToString(dr["Interview_Status"]),
+                    //                     //Marketing_End_Date = dr["Marketing_End_Date"] is DBNull ? "" : Convert.ToDateTime(dr["Marketing_End_Date"]).ToShortDateString(),
+
+                    //                 }).ToList();
+                    #endregion
                 }
             }
             catch (Exception ex)
@@ -98,7 +122,9 @@ namespace WebApi_New.Models
             return listMarketing;
         }
 
+        //public List<cg_Consultant> getConsultDetails( int Allorany)
         public List<cg_Consultant> getConsultDetails()
+
         {
             DataTable dtConsult = new DataTable();
             List<cg_Consultant> listConsult = new List<cg_Consultant>();
@@ -106,7 +132,22 @@ namespace WebApi_New.Models
             try
             {
 
-                dtConsult = dynamicTableData("[dbo].[Sp_Getconsultantdetails]");
+                // dtConsult = dynamicTableData("[dbo].[Sp_Getconsultantdetails]");
+                string Query = @"[dbo].[Sp_Getconsultantdetails]";
+                string sqlDatasource = _configuration.GetConnectionString("CodeGravityDB");
+                SqlDataAdapter dbAdapater;
+                using (SqlConnection dbConnection = new SqlConnection(sqlDatasource))
+                {
+                    dbConnection.Open();
+                    using (SqlCommand dbcommand = new SqlCommand(Query, dbConnection))
+                    {
+                        dbcommand.CommandType = CommandType.StoredProcedure;
+                        dbcommand.Parameters.AddWithValue("@ConsultantStatusId", SqlDbType.Int).Value = 1;
+                        dbAdapater = new SqlDataAdapter(dbcommand);
+                        dbAdapater.Fill(dtConsult);
+                        dbConnection.Close();
+                    }
+                }
 
                 if (dtConsult != null && dtConsult.Rows.Count > 0)
                 {
@@ -184,7 +225,9 @@ namespace WebApi_New.Models
             DataTable PlacementDetails = new DataTable();
             List<cg_Placement> listMarketing = new List<cg_Placement>();
             List<cg_Employees> listemployee = getEmployeeDetails();
+            // List<cg_Consultant> listConsultant = getConsultDetails(-1);
             List<cg_Consultant> listConsultant = getConsultDetails();
+
             try
             {
 
@@ -441,6 +484,7 @@ namespace WebApi_New.Models
             DataTable dtRecruiters = new DataTable();
             bool result = false;
 
+
             try
             {
                 String query = "INSERT INTO [CG].[Consultant_Marketing] (Consult_id,Assigned_Sales_Recruiter,Marketing_Tech,Is_Open_To_All,Marketing_Start_Date,Marketing_End_Date,Visa_Status,Notes) VALUES " +
@@ -466,7 +510,105 @@ namespace WebApi_New.Models
                         myReader = mycommand.ExecuteReader();
                         // table.Load(myReader.af);
                         if (myReader.RecordsAffected > 0)
+                        {
+                            updateConsultantStatus(em.Consult_Id, 2);
                             result = true;
+                        }
+                        myReader.Close();
+                        mycon.Close();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return false;
+            }
+            return result;
+        }
+
+        public void updateConsultantStatus(int Consultant_id, int Status_id)
+        {
+            try
+            {
+                String query = @"update [CG].[ConsultantMaster] set [Consult_Status]=" + Status_id + "where [Consult_Id]=" + Consultant_id + ";";
+                DataTable table = new DataTable();
+                string SQlDatasource = _configuration.GetConnectionString("CodeGravityDB");
+                SqlDataReader myReader;
+                bool result = false;
+                using (SqlConnection mycon = new SqlConnection(SQlDatasource))
+                {
+                    using (SqlCommand mycommand = new SqlCommand(query, mycon))
+                    {
+                        mycommand.Parameters.AddWithValue("@Consultant_id", Consultant_id);
+                        mycommand.Parameters.AddWithValue("@Consult_Status", Status_id);
+
+                        mycon.Open();
+                        myReader = mycommand.ExecuteReader();
+                        // table.Load(myReader.af);
+                        if (myReader.RecordsAffected > 0)
+                            result = true;
+                        myReader.Close();
+                        mycon.Close();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                //throw;
+            }
+        }
+
+        public bool AddNewplacementAssignment(cg_Placement em)
+        {
+            DataTable dtRecruiters = new DataTable();
+            bool result = false;
+
+
+            try
+            {
+                String query = "INSERT INTO [CG].[Consultant_Marketing] (Consult_id,Placed_Sales_Recruiter,Placed_Tech,PO_Date,Project_Start_Date,Project_Duration,Bill_Rate,Consultant_Pay_Rate,Vendor_Name,Vendor_Address,Client_Name,Client_Address,Project_End_Date,Visa_Type,Project_Status,Notes)" +
+                    " VALUES " +
+                    "(@Consult_id,@Placed_Sales_Recruiter,@Placed_Tech,@PO_Date,@Project_Start_Date,@Project_Duration,@Bill_Rate,@Consultant_Pay_Rate,@Vendor_Name,@Vendor_Address,@Client_Name,@Client_Address,@Project_End_Date,@Visa_Type,@Project_Status,@Notes)";
+
+                DataTable table = new DataTable();
+                string SQlDatasource = _configuration.GetConnectionString("CodeGravityDB");
+                SqlDataReader myReader;
+                using (SqlConnection mycon = new SqlConnection(SQlDatasource))
+                {
+                    using (SqlCommand mycommand = new SqlCommand(query, mycon))
+                    {
+                        mycommand.Parameters.AddWithValue("@Consult_id", em.Consult_id);
+                        mycommand.Parameters.AddWithValue("@Placed_Sales_Recruiter", em.Placed_Sales_Recruiter);
+                        mycommand.Parameters.AddWithValue("@Placed_Tech", em.Placed_Tech);
+                        mycommand.Parameters.AddWithValue("@PO_Date", em.PO_Date);
+
+                        mycommand.Parameters.AddWithValue("@Project_Start_Date", em.Project_Start_Date);
+                        mycommand.Parameters.AddWithValue("@Project_Duration", em.Project_Duration);
+                        mycommand.Parameters.AddWithValue("@Bill_Rate", em.Bill_Rate);
+
+                        mycommand.Parameters.AddWithValue("@Consultant_Pay_Rate", em.Consultant_Pay_Rate);
+                        mycommand.Parameters.AddWithValue("@Vendor_Name", em.Vendor_Name);
+                        mycommand.Parameters.AddWithValue("@Vendor_Address", em.Vendor_Address);
+
+                        mycommand.Parameters.AddWithValue("@Client_Name", em.Client_Name);
+                        mycommand.Parameters.AddWithValue("@Client_Address", em.Client_Address);
+                        mycommand.Parameters.AddWithValue("@Project_End_Date", em.Project_End_Date);
+
+
+                        mycommand.Parameters.AddWithValue("@Visa_Type", em.Visa_Type);
+                        mycommand.Parameters.AddWithValue("@Project_Status", em.Project_Status);
+                        mycommand.Parameters.AddWithValue("@Notes", em.Notes);
+
+                        mycon.Open();
+                        myReader = mycommand.ExecuteReader();
+                        // table.Load(myReader.af);
+                        if (myReader.RecordsAffected > 0)
+                        {
+                            //updateConsultantStatus(em.Consult_Id, 2);
+                            result = true;
+                        }
                         myReader.Close();
                         mycon.Close();
                     }

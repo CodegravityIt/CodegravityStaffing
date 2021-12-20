@@ -29,5 +29,15 @@ namespace WebApi_New.Controllers
             //DataTable result = ObjCM.getMarketingDetails();
             return new JsonResult(ObjPM.getPlacementDetails());
         }
+        [HttpPost]
+        public JsonResult post(cg_Placement objPlacement)
+        {
+            bool result = ObjPM.AddNewPlacement(objPlacement);
+
+            if (result)
+                return new JsonResult("New market assignment Added Succfully");
+            else
+                return new JsonResult("Failed to add New market assignment ..");
+        }
     }
 }
