@@ -15,12 +15,25 @@ namespace WebApi_New.Models
             _configuration = configuration;
             objGG_Dal = new Codegravity_Staffing_DAL(_configuration);
         }
-        public List<cg_Submissions> getSubmissionsDetails()
+        public List<cg_Submissions> getSubmissionslist()
         {
             List<cg_Submissions> dtSubmissions = new List<cg_Submissions>();
             try
             {
-              //  dtSubmissions = objGG_Dal.getTechnologyDetails();
+               dtSubmissions = objGG_Dal.getSubmissionlist();
+            }
+            catch (Exception ex)
+            {
+            }
+            return dtSubmissions;
+        }
+
+        public List<cg_Submissions> getSubmissionsdetails()
+        {
+            List<cg_Submissions> dtSubmissions = new List<cg_Submissions>();
+            try
+            {
+                dtSubmissions = objGG_Dal.getSubmissionDetails();
             }
             catch (Exception ex)
             {

@@ -223,7 +223,7 @@ namespace WebApi_New.Models
         public List<cg_Placement> getPlacementDetails()
         {
             DataTable PlacementDetails = new DataTable();
-            List<cg_Placement> listMarketing = new List<cg_Placement>();
+            List<cg_Placement> listPlacement = new List<cg_Placement>();
             List<cg_Employees> listemployee = getEmployeeDetails();
             // List<cg_Consultant> listConsultant = getConsultDetails(-1);
             List<cg_Consultant> listConsultant = getConsultDetails();
@@ -237,30 +237,38 @@ namespace WebApi_New.Models
                 if (PlacementDetails != null && PlacementDetails.Rows.Count > 0)
                 {
 
-                    string strname = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(PlacementDetails.Rows[1]["Consult_id"])).FirstOrDefault().Emp_FirstName.ToString();
-                    listMarketing = (from DataRow dr in PlacementDetails.Rows
+                    listPlacement = (from DataRow dr in PlacementDetails.Rows
                                      select new cg_Placement()
                                      {
                                          Id = dr["Id"] is DBNull ? 0 : Convert.ToInt32(dr["Id"]),
                                          Consult_id = dr["Consult_id"] is DBNull ? 0 : Convert.ToInt32(dr["Consult_id"]),
-                                         Consult_Name = listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(dr["Consult_id"])).FirstOrDefault().Consult_First_Name.ToString() +
-                                                        listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(dr["Consult_id"])).FirstOrDefault().Consult_Last_Name.ToString(),
-                                         Placed_Sales_Recruiter = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(dr["Placed_Sales_Recruiter"])).FirstOrDefault().Emp_FirstName.ToString(),
+                                         Consult_Name = listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(dr["Consult_id"])).FirstOrDefault().Consult_Full_Name.ToString(),
+                                         Placed_Sales_Recruiter = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(dr["Placed_Sales_Recruiter"])).FirstOrDefault().Emp_FullName.ToString(),
                                          Placed_Tech = dr["Placed_Tech"] is DBNull ? "" : Convert.ToString(dr["Placed_Tech"]),
-                                         PO_Date = dr["PO_Date"] is DBNull ? "" : Convert.ToDateTime(dr["PO_Date"]).ToShortDateString(),
-                                         Project_Start_Date = dr["Project_Start_Date"] is DBNull ? "" : Convert.ToDateTime(dr["Project_Start_Date"]).ToShortDateString(),
+                                         PO_Date = dr["PO_Date"] is DBNull ? "" : Convert.ToDateTime(dr["PO_Date"]).ToString("MM/dd/yyyy"),
+                                         Visa_Type = dr["Visa_Type"] is DBNull ? "" : Convert.ToString(dr["Visa_Type"]),
+                                         Project_Start_Date = dr["Project_Start_Date"] is DBNull ? "" : Convert.ToDateTime(dr["Project_Start_Date"]).ToString("MM/dd/yyyy"),
                                          Project_Duration = dr["Project_Duration"] is DBNull ? "" : Convert.ToString(dr["Project_Duration"]),
-                                         Bill_Rate = dr["Bill_Rate"] is DBNull ? "" : Convert.ToString(dr["Bill_Rate"]),
-                                         Consultant_Pay_Rate = dr["Consultant_Pay_Rate"] is DBNull ? "" : Convert.ToString(dr["Consultant_Pay_Rate"]),
+                                         Project_End_Date = dr["Project_End_Date"] is DBNull ? "" : Convert.ToDateTime(dr["Project_End_Date"]).ToString("MM/dd/yyyy"),
                                          Vendor_Name = dr["Vendor_Name"] is DBNull ? "" : Convert.ToString(dr["Vendor_Name"]),
+                                         Vendor_SPOC_Name = dr["Vendor_SPOC_Name"] is DBNull ? "" : Convert.ToString(dr["Vendor_SPOC_Name"]),
+                                         Vendor_SPOC_Email = dr["Vendor_SPOC_Email"] is DBNull ? "" : Convert.ToString(dr["Vendor_SPOC_Email"]),
+                                         Vendor_SPOC_PhoneNumber = dr["Vendor_SPOC_PhoneNumber"] is DBNull ? "" : Convert.ToString(dr["Vendor_SPOC_PhoneNumber"]),
                                          Vendor_Address = dr["Vendor_Address"] is DBNull ? "" : Convert.ToString(dr["Vendor_Address"]),
                                          Client_Name = dr["Client_Name"] is DBNull ? "" : Convert.ToString(dr["Client_Name"]),
+                                         Client_SPOC_Name = dr["Client_SPOC_Name"] is DBNull ? "" : Convert.ToString(dr["Client_SPOC_Name"]),
+                                         Client_SPOC_Email = dr["Client_SPOC_Email"] is DBNull ? "" : Convert.ToString(dr["Client_SPOC_Email"]),
+                                         Client_SPOC_PhoneNumber = dr["Client_SPOC_PhoneNumber"] is DBNull ? "" : Convert.ToString(dr["Client_SPOC_PhoneNumber"]),
                                          Client_Address = dr["Client_Address"] is DBNull ? "" : Convert.ToString(dr["Client_Address"]),
-                                         Project_End_Date = dr["Project_End_Date"] is DBNull ? "" : Convert.ToDateTime(dr["Project_End_Date"]).ToShortDateString(),
-                                         Visa_Type = dr["Visa_Type"] is DBNull ? "" : Convert.ToString(dr["Visa_Type"]),
-                                         Project_Status = dr["Project_Status"] is DBNull ? "" : Convert.ToString(dr["Project_Status"]),
-                                         Notes = dr["Notes"] is DBNull ? "" : Convert.ToString(dr["Notes"])
-
+                                         Project_Type = dr["Project_Type"] is DBNull ? "" : Convert.ToString(dr["Project_Type"]).ToString(),
+                                         Bill_Rate = dr["Bill_Rate"] is DBNull ? "" : Convert.ToString(dr["Bill_Rate"]),
+                                         Consultant_Pay_Rate = dr["Consultant_Pay_Rate"] is DBNull ? "" : Convert.ToString(dr["Consultant_Pay_Rate"]),
+                                         Notes = dr["Notes"] is DBNull ? "" : Convert.ToString(dr["Notes"]),
+                                         Placement_Status = dr["Placement_Status"] is DBNull ? 0 : Convert.ToInt32(dr["Placement_Status"]),
+                                         Created_Date = dr["Created_Date"] is DBNull ? "" : Convert.ToDateTime(dr["Created_Date"]).ToString("MM/dd/yyyy"),
+                                         Created_by = dr["Created_by"] is DBNull ? "" : Convert.ToString(dr["Created_by"]),
+                                         Modified_Date = dr["Modified_Date"] is DBNull ? "" : Convert.ToDateTime(dr["Modified_Date"]).ToString("MM/dd/yyyy"),
+                                         Modified_by = dr["Modified_by"] is DBNull ? "" : Convert.ToString(dr["Modified_by"])
                                      }).ToList();
 
                 }
@@ -270,7 +278,7 @@ namespace WebApi_New.Models
 
                 return null;
             }
-            return listMarketing;
+            return listPlacement;
         }
 
         public List<cg_WorkRegion> getCountryDetails()
@@ -568,7 +576,7 @@ namespace WebApi_New.Models
 
             try
             {
-                String query = "INSERT INTO [CG].[Consultant_Marketing] (Consult_id,Placed_Sales_Recruiter,Placed_Tech,PO_Date,Project_Start_Date,Project_Duration,Bill_Rate,Consultant_Pay_Rate,Vendor_Name,Vendor_Address,Client_Name,Client_Address,Project_End_Date,Visa_Type,Project_Status,Notes)" +
+                String query = "INSERT INTO [CG].[Consultant_Placement] (Consult_id,Placed_Sales_Recruiter,Placed_Tech,PO_Date,Project_Start_Date,Project_Duration,Bill_Rate,Consultant_Pay_Rate,Vendor_Name,Vendor_Address,Client_Name,Client_Address,Project_End_Date,Visa_Type,Project_Status,Notes)" +
                     " VALUES " +
                     "(@Consult_id,@Placed_Sales_Recruiter,@Placed_Tech,@PO_Date,@Project_Start_Date,@Project_Duration,@Bill_Rate,@Consultant_Pay_Rate,@Vendor_Name,@Vendor_Address,@Client_Name,@Client_Address,@Project_End_Date,@Visa_Type,@Project_Status,@Notes)";
 
@@ -598,7 +606,7 @@ namespace WebApi_New.Models
 
 
                         mycommand.Parameters.AddWithValue("@Visa_Type", em.Visa_Type);
-                        mycommand.Parameters.AddWithValue("@Project_Status", em.Project_Status);
+                        mycommand.Parameters.AddWithValue("@Project_Status", em.Placement_Status);
                         mycommand.Parameters.AddWithValue("@Notes", em.Notes);
 
                         mycon.Open();
@@ -620,6 +628,197 @@ namespace WebApi_New.Models
                 return false;
             }
             return result;
+        }
+
+        public List<cg_Submissions> getSubmissionlist()
+        {
+            DataTable SubmissionDetails = new DataTable();
+            List<cg_Submissions> listSubmissions = new List<cg_Submissions>();
+            List<cg_Employees> listemployee = getEmployeeDetails();
+            List<cg_Consultant> listConsultant = getConsultDetails();
+
+            List<cg_Technology> listTech = getTechnologyDetails();
+            try
+            {
+                SubmissionDetails = dynamicTableData("[dbo].[Sp_GetsubmissionsList]");
+                if (SubmissionDetails != null && SubmissionDetails.Rows.Count > 0)
+                {
+
+
+                    for (int i = 0; i < SubmissionDetails.Rows.Count; i++)
+                    {
+                        cg_Submissions obj = new cg_Submissions();
+                        obj.Id = Convert.ToInt32(SubmissionDetails.Rows[i]["Id"]);
+                        obj.Consult_Id = Convert.ToInt32(SubmissionDetails.Rows[i]["Consult_id"]);
+                        obj.Recruiter_id = Convert.ToInt32(SubmissionDetails.Rows[i]["Recruiter_id"]);
+                        obj.NoOfSubmissions = Convert.ToInt32(SubmissionDetails.Rows[i]["NumberOfSubmissions"]);
+
+                        obj.Consult_Name = listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(SubmissionDetails.Rows[i]["Consult_id"])).FirstOrDefault().Consult_Full_Name;//Convert.ToString(MarketingDetails.Rows[i]["Consult_Name"]);
+                        obj.Recruiter_Name = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(SubmissionDetails.Rows[i]["Recruiter_id"])).FirstOrDefault().Emp_FullName.ToString();
+
+                        obj.Marketing_Tech = listTech.Where(p => p.Id == Convert.ToInt32(SubmissionDetails.Rows[i]["Marketing_Tech"])).FirstOrDefault().Technology_Name;
+                        obj.Vendor_Name = Convert.ToString(SubmissionDetails.Rows[i]["Vendor_Name"]);
+                        obj.Vendor_POC_Name = Convert.ToString(SubmissionDetails.Rows[i]["Vendor_POC_Name"]);
+                        obj.Vendor_POC_Email = Convert.ToString(SubmissionDetails.Rows[i]["Vendor_POC_Email"]);
+                        obj.Vendor_POC_PhoneNumber = Convert.ToString(SubmissionDetails.Rows[i]["Vendor_POC_PhoneNumber"]);
+                        obj.Vendor_Address = Convert.ToString(SubmissionDetails.Rows[i]["Vendor_Address"]);
+                        obj.End_Client_Name = Convert.ToString(SubmissionDetails.Rows[i]["End_Client_Name"]);
+                        obj.End_Client_POC_Name = Convert.ToString(SubmissionDetails.Rows[i]["End_Client_POC_Name"]);
+                        obj.End_Client_POC_Email = Convert.ToString(SubmissionDetails.Rows[i]["End_Client_POC_Email"]);
+                        obj.End_Client_POC_PhoneNumber = Convert.ToString(SubmissionDetails.Rows[i]["End_Client_POC_PhoneNumber"]);
+                        obj.End_Client_Address = Convert.ToString(SubmissionDetails.Rows[i]["End_Client_Address"]);
+                        obj.Rate_confirmation = Convert.ToString(SubmissionDetails.Rows[i]["Rate_confirmation"]);
+                        obj.Bill_Rate = Convert.ToString(SubmissionDetails.Rows[i]["Bill_Rate"]);
+                        obj.Assignment_date = Convert.ToDateTime(SubmissionDetails.Rows[i]["Assignment_date"]).ToShortDateString();
+                        obj.Assignment_done_by = Convert.ToString(SubmissionDetails.Rows[i]["Assignment_done_by"]);
+                        obj.Assignment_status = Convert.ToString(SubmissionDetails.Rows[i]["Assignment_status"]);
+                        obj.Interview_Schedudule_Date = Convert.ToDateTime(SubmissionDetails.Rows[i]["Interview_Schedudule_Date"]).ToShortDateString();
+                        obj.Interview_Status = Convert.ToString(SubmissionDetails.Rows[i]["Interview_Status"]);
+                        obj.Created_date = Convert.ToDateTime(SubmissionDetails.Rows[i]["Created_date"]).ToShortDateString();
+                        obj.Created_by = Convert.ToString(SubmissionDetails.Rows[i]["Created_by"]);
+                        obj.Modified_Date = Convert.ToDateTime(SubmissionDetails.Rows[i]["Modified_Date"]).ToShortDateString();
+                        obj.Modified_by = Convert.ToString(SubmissionDetails.Rows[i]["Modified_by"]);
+                        obj.Notes = Convert.ToString(SubmissionDetails.Rows[i]["Notes"]);
+                        obj.submission_status = Convert.ToString(SubmissionDetails.Rows[i]["submission_status"]);
+
+
+                        listSubmissions.Add(obj);
+                    }
+                    #region commented
+                    //listMarketing = (from DataRow dr in MarketingDetails.Rows
+                    //                 select new cg_Marketing()
+                    //                 {
+                    //                     Id = dr["Id"] is DBNull ? 0 : Convert.ToInt32(dr["Id"]),
+                    //                     Consult_Id = dr["Consult_id"] is DBNull ? 0 : Convert.ToInt32(dr["Consult_id"]),
+                    //                     Consult_Name = listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(dr["Consult_id"])).FirstOrDefault().Consult_Full_Name.ToString(),
+                    //                     Assigned_Sales_Recruiter = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(dr["Assigned_Sales_Recruiter"])).FirstOrDefault().Emp_FullName.ToString(),
+                    //                     Marketing_Tech = dr["Marketing_Tech"] is DBNull ? "0" : listTech.Where(p => p.Id == Convert.ToInt32(dr["Marketing_Tech"])).FirstOrDefault().Technology_Name.ToString(),//dr["Marketing_Tech"] is DBNull ? "" : Convert.ToString(dr["Marketing_Tech"]),
+                    //                     Is_Open_To_All = dr["Is_Open_To_All"] is DBNull ? "" : Convert.ToString(dr["Is_Open_To_All"]),
+                    //                     Marketing_Start_Date = dr["Marketing_Start_Date"] is DBNull ? "" : Convert.ToDateTime(dr["Marketing_Start_Date"]).ToShortDateString(),
+                    //                     Visa_Status = dr["Visa_Status"] is DBNull ? "" : Convert.ToString(dr["Visa_Status"]),
+                    //                     Marketing_Status = dr["Marketing_Status"] is DBNull ? "" : Convert.ToString(dr["Marketing_Status"]),
+                    //                     Notes = dr["Notes"] is DBNull ? "" : Convert.ToString(dr["Notes"])
+
+
+                    //                     //Submitted_Vendor = dr["Submited_Vendor"] is DBNull ? "" : Convert.ToString(dr["Submited_Vendor"]),
+                    //                     // End_Client_Name = dr["End_Client_Name"] is DBNull ? "" : Convert.ToString(dr["End_Client_Name"]),
+                    //                     //Rate_confirmation = dr["Rate_confirmation"] is DBNull ? "" : Convert.ToString(dr["Rate_confirmation"]),
+                    //                     //Bill_Rate = dr["Bill_Rate"] is DBNull ? "" : Convert.ToString(dr["Bill_Rate"]),
+                    //                     //Assignment_date = dr["Assignment_date"] is DBNull ? "" : Convert.ToDateTime(dr["Assignment_date"]).ToShortDateString(),
+                    //                     //Assignment_status = dr["Assignment_status"] is DBNull ? "" : Convert.ToString(dr["Assignment_status"]),
+                    //                     //Interview_Schedudule_Date = dr["Interview_Schedudule_Date"] is DBNull ? "" : Convert.ToString(dr["Interview_Schedudule_Date"]),
+                    //                     //Interview_Status = dr["Interview_Status"] is DBNull ? "" : Convert.ToString(dr["Interview_Status"]),
+                    //                     //Marketing_End_Date = dr["Marketing_End_Date"] is DBNull ? "" : Convert.ToDateTime(dr["Marketing_End_Date"]).ToShortDateString(),
+
+                    //                 }).ToList();
+                    #endregion
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return null;
+            }
+            return listSubmissions;
+        }
+
+        public List<cg_Submissions> getSubmissionDetails()
+        {
+            DataTable SubmissionDetails = new DataTable();
+            List<cg_Submissions> listSubmissions = new List<cg_Submissions>();
+            List<cg_Employees> listemployee = getEmployeeDetails();
+            List<cg_Consultant> listConsultant = getConsultDetails();
+
+            List<cg_Technology> listTech = getTechnologyDetails();
+            try
+            {
+                SubmissionDetails = dynamicTableData("[dbo].[Sp_Getsubmissiondetailedinfo]");
+                if (SubmissionDetails != null && SubmissionDetails.Rows.Count > 0)
+                {
+
+
+                    for (int i = 0; i < SubmissionDetails.Rows.Count; i++)
+                    {
+                        cg_Submissions obj = new cg_Submissions();
+                        obj.Id = Convert.ToInt32(SubmissionDetails.Rows[i]["Id"]);
+                        obj.Consult_Id = Convert.ToInt32(SubmissionDetails.Rows[i]["Consult_id"]);
+                        obj.Recruiter_id = Convert.ToInt32(SubmissionDetails.Rows[i]["Recruiter_id"]);
+                        //obj.NoOfSubmissions=Convert.ToInt32(SubmissionDetails.Rows[i]["NumberOfSubmissions"]);
+
+                        obj.Consult_Name = listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(SubmissionDetails.Rows[i]["Consult_id"])).FirstOrDefault().Consult_Full_Name;//Convert.ToString(MarketingDetails.Rows[i]["Consult_Name"]);
+                        obj.Recruiter_Name = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(SubmissionDetails.Rows[i]["Recruiter_id"])).FirstOrDefault().Emp_FullName.ToString();
+
+                        obj.Marketing_Tech = listTech.Where(p => p.Id == Convert.ToInt32(SubmissionDetails.Rows[i]["Marketing_Tech"])).FirstOrDefault().Technology_Name;
+                        obj.Vendor_Name = Convert.ToString(SubmissionDetails.Rows[i]["Vendor_Name"]);
+                        obj.Vendor_POC_Name = Convert.ToString(SubmissionDetails.Rows[i]["Vendor_POC_Name"]);
+                        obj.Vendor_POC_Email = Convert.ToString(SubmissionDetails.Rows[i]["Vendor_POC_Email"]);
+                        obj.Vendor_POC_PhoneNumber = Convert.ToString(SubmissionDetails.Rows[i]["Vendor_POC_PhoneNumber"]);
+                        obj.Vendor_Address = Convert.ToString(SubmissionDetails.Rows[i]["Vendor_Address"]);
+                        obj.End_Client_Name = Convert.ToString(SubmissionDetails.Rows[i]["End_Client_Name"]);
+                        obj.End_Client_POC_Name = Convert.ToString(SubmissionDetails.Rows[i]["End_Client_POC_Name"]);
+                        obj.End_Client_POC_Email = Convert.ToString(SubmissionDetails.Rows[i]["End_Client_POC_Email"]);
+                        obj.End_Client_POC_PhoneNumber = Convert.ToString(SubmissionDetails.Rows[i]["End_Client_POC_PhoneNumber"]);
+                        obj.End_Client_Address = Convert.ToString(SubmissionDetails.Rows[i]["End_Client_Address"]);
+                        obj.Rate_confirmation = Convert.ToString(SubmissionDetails.Rows[i]["Rate_confirmation"]);
+                        obj.Bill_Rate = Convert.ToString(SubmissionDetails.Rows[i]["Bill_Rate"]);
+                        obj.Assignment_date = Convert.ToDateTime(SubmissionDetails.Rows[i]["Assignment_date"]).ToString("MM/dd/yyyy");
+                        obj.Assignment_done_by = Convert.ToString(SubmissionDetails.Rows[i]["Assignment_done_by"]);
+
+                        obj.Assignment_status = Convert.ToString(SubmissionDetails.Rows[i]["Assignment_status"]);
+
+                        obj.Interview_Schedudule_Date = Convert.ToDateTime(SubmissionDetails.Rows[i]["Interview_Schedudule_Date"]).ToString("MM/dd/yyyy"); ;
+                        obj.Interview_Status = Convert.ToString(SubmissionDetails.Rows[i]["Interview_Status"]);
+
+                        obj.Created_date = Convert.ToDateTime(SubmissionDetails.Rows[i]["Created_date"]).ToString("MM/dd/yyyy");
+
+                        obj.Created_by = Convert.ToString(SubmissionDetails.Rows[i]["Created_by"]);
+
+                        obj.Modified_Date = Convert.ToDateTime(SubmissionDetails.Rows[i]["Modified_Date"]).ToString("MM/dd/yyyy");
+
+                        obj.Modified_by = Convert.ToString(SubmissionDetails.Rows[i]["Modified_by"]);
+
+                        obj.Notes = Convert.ToString(SubmissionDetails.Rows[i]["Notes"]);
+                        obj.submission_status = Convert.ToString(SubmissionDetails.Rows[i]["submission_status"]);
+
+
+                        listSubmissions.Add(obj);
+                    }
+                    #region commented
+                    //listMarketing = (from DataRow dr in MarketingDetails.Rows
+                    //                 select new cg_Marketing()
+                    //                 {
+                    //                     Id = dr["Id"] is DBNull ? 0 : Convert.ToInt32(dr["Id"]),
+                    //                     Consult_Id = dr["Consult_id"] is DBNull ? 0 : Convert.ToInt32(dr["Consult_id"]),
+                    //                     Consult_Name = listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(dr["Consult_id"])).FirstOrDefault().Consult_Full_Name.ToString(),
+                    //                     Assigned_Sales_Recruiter = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(dr["Assigned_Sales_Recruiter"])).FirstOrDefault().Emp_FullName.ToString(),
+                    //                     Marketing_Tech = dr["Marketing_Tech"] is DBNull ? "0" : listTech.Where(p => p.Id == Convert.ToInt32(dr["Marketing_Tech"])).FirstOrDefault().Technology_Name.ToString(),//dr["Marketing_Tech"] is DBNull ? "" : Convert.ToString(dr["Marketing_Tech"]),
+                    //                     Is_Open_To_All = dr["Is_Open_To_All"] is DBNull ? "" : Convert.ToString(dr["Is_Open_To_All"]),
+                    //                     Marketing_Start_Date = dr["Marketing_Start_Date"] is DBNull ? "" : Convert.ToDateTime(dr["Marketing_Start_Date"]).ToShortDateString(),
+                    //                     Visa_Status = dr["Visa_Status"] is DBNull ? "" : Convert.ToString(dr["Visa_Status"]),
+                    //                     Marketing_Status = dr["Marketing_Status"] is DBNull ? "" : Convert.ToString(dr["Marketing_Status"]),
+                    //                     Notes = dr["Notes"] is DBNull ? "" : Convert.ToString(dr["Notes"])
+
+
+                    //                     //Submitted_Vendor = dr["Submited_Vendor"] is DBNull ? "" : Convert.ToString(dr["Submited_Vendor"]),
+                    //                     // End_Client_Name = dr["End_Client_Name"] is DBNull ? "" : Convert.ToString(dr["End_Client_Name"]),
+                    //                     //Rate_confirmation = dr["Rate_confirmation"] is DBNull ? "" : Convert.ToString(dr["Rate_confirmation"]),
+                    //                     //Bill_Rate = dr["Bill_Rate"] is DBNull ? "" : Convert.ToString(dr["Bill_Rate"]),
+                    //                     //Assignment_date = dr["Assignment_date"] is DBNull ? "" : Convert.ToDateTime(dr["Assignment_date"]).ToShortDateString(),
+                    //                     //Assignment_status = dr["Assignment_status"] is DBNull ? "" : Convert.ToString(dr["Assignment_status"]),
+                    //                     //Interview_Schedudule_Date = dr["Interview_Schedudule_Date"] is DBNull ? "" : Convert.ToString(dr["Interview_Schedudule_Date"]),
+                    //                     //Interview_Status = dr["Interview_Status"] is DBNull ? "" : Convert.ToString(dr["Interview_Status"]),
+                    //                     //Marketing_End_Date = dr["Marketing_End_Date"] is DBNull ? "" : Convert.ToDateTime(dr["Marketing_End_Date"]).ToShortDateString(),
+
+                    //                 }).ToList();
+                    #endregion
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return null;
+            }
+            return listSubmissions;
         }
 
     }

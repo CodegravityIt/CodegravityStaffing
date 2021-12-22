@@ -9,7 +9,7 @@ using WebApi_New.Models;
 
 namespace WebApi_New.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class SubmissionsMasterController : ControllerBase
     {
@@ -24,10 +24,22 @@ namespace WebApi_New.Controllers
 
 
         [HttpGet]
+        [ActionName("")]
         public JsonResult Get()
         {
             //DataTable result = ObjCM.getMarketingDetails();
-            return new JsonResult(ObjPM.getSubmissionsDetails());
+            return new JsonResult(ObjPM.getSubmissionslist());
+        }
+
+        [HttpGet]
+        [ActionName("GetAll")]
+        public JsonResult GetSubmissionDetails()
+        {
+            //return new JsonResult("called new method");
+
+            return new JsonResult(ObjPM.getSubmissionsdetails());
+
+
         }
     }
 }

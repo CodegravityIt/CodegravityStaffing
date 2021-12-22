@@ -35,9 +35,9 @@ namespace WebApi_New.Controllers
             bool result = ObjPM.AddNewPlacement(objPlacement);
 
             if (result)
-                return new JsonResult("New market assignment Added Succfully");
+                return new JsonResult("New placement Added Succfully");
             else
-                return new JsonResult("Failed to add New market assignment ..");
+                return new JsonResult("Failed to add placement details ..");
         }
     }
 }

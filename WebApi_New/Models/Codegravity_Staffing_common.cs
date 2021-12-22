@@ -61,7 +61,7 @@ namespace WebApi_New.Models
         public int Emp_IncentiveType { get; set; }
         public int Emp_Status { get; set; }
         public int Role_Id { get; set; }
-        public string  Emp_Country { get; set; }
+        public string Emp_Country { get; set; }
         public string Emp_FullName { get; set; }
 
     }
@@ -71,24 +71,35 @@ namespace WebApi_New.Models
         public int Id { get; set; }
         public int Consult_id { get; set; }
         public string Consult_Name { get; set; }
-
         public string Placed_Sales_Recruiter { get; set; }
         public string Placed_Tech { get; set; }
-        public string Is_Open_To_All { get; set; }
         public string PO_Date { get; set; }
+        public string Visa_Type { get; set; }
         public string Project_Start_Date { get; set; }
         public string Project_Duration { get; set; }
-        public string Bill_Rate { get; set; }
-        public string Consultant_Pay_Rate { get; set; }
+        public string Project_End_Date { get; set; }
         public string Vendor_Name { get; set; }
+        public string Vendor_SPOC_Name { get; set; }
+        public string Vendor_SPOC_Email { get; set; }
+        public string Vendor_SPOC_PhoneNumber { get; set; }
         public string Vendor_Address { get; set; }
         public string Client_Name { get; set; }
+        public string Client_SPOC_Name { get; set; }
+        public string Client_SPOC_Email { get; set; }
+        public string Client_SPOC_PhoneNumber { get; set; }
         public string Client_Address { get; set; }
-        public string Project_End_Date { get; set; }
-        public string Visa_Type { get; set; }
-
-        public string Project_Status { get; set; }
+        public string Project_Type { get; set; }
+        public string Bill_Rate { get; set; }
+        public string Consultant_Pay_Rate { get; set; }
         public string Notes { get; set; }
+        public int Placement_Status { get; set; }
+        public string Created_Date { get; set; }
+        public string Created_by { get; set; }
+
+        public string Modified_Date { get; set; }
+        public string Modified_by { get; set; }
+
+
     }
 
     public class cg_WorkRegion
@@ -129,13 +140,47 @@ namespace WebApi_New.Models
 
     public class cg_Submissions
     {
-
         public int Id { get; set; }
+        public int NoOfSubmissions { get; set; }
+        public int Consult_Id { get; set; }
+        public string Consult_Name { get; set; }
+        public int Recruiter_id { get; set; }
+        public string Recruiter_Name { get; set; }
+        public string Marketing_Tech { get; set; }
 
-        public string Technology_Name { get; set; }
+        public string Vendor_Name { get; set; }
+        public string Vendor_POC_Name { get; set; }
 
-        public string Technology_Description { get; set; }
+        public string Vendor_Address { get; set; }
+        public string Vendor_POC_Email { get; set; }
+        public string Vendor_POC_PhoneNumber { get; set; }
+
+        public string End_Client_Name { get; set; }
+        public string End_Client_POC_Name { get; set; }
+
+
+        public string End_Client_POC_Email { get; set; }
+        public string End_Client_POC_PhoneNumber { get; set; }
+        public string End_Client_Address { get; set; }
+
+        public string Rate_confirmation { get; set; }
+        public string Bill_Rate { get; set; }
+        public string Assignment_date { get; set; }
+        public string Assignment_status { get; set; }
+        public string Assignment_done_by { get; set; }
+        public string Interview_Schedudule_Date { get; set; }
+        public string Interview_Status { get; set; }
+        public string submission_status { get; set; }
+        public string Created_date { get; set; }
+        public string Created_by { get; set; }
+
+
+        public string Modified_Date { get; set; }
+        public string Modified_by { get; set; }
+
         public string Notes { get; set; }
+
+
 
     }
     public class cg_County
@@ -169,7 +214,7 @@ namespace WebApi_New.Models
 
     public class cg_Entitlement
     {
-        
+
         public int Entit_Id { get; set; }
 
         public string Entit_Name { get; set; }
@@ -177,7 +222,7 @@ namespace WebApi_New.Models
         public string Entit_Desc { get; set; }
         public string Entit_status { get; set; }
 
-        public string Notes  { get; set; }
-        
+        public string Notes { get; set; }
+
     }
 }
