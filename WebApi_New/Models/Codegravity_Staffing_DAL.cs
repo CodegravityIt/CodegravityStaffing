@@ -79,7 +79,7 @@ namespace WebApi_New.Models
                         obj.Marketing_Status = Convert.ToString(MarketingDetails.Rows[i]["Marketing_Status"]);
                         obj.Notes = Convert.ToString(MarketingDetails.Rows[i]["Notes"]);
                         obj.Consult_Name = listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(MarketingDetails.Rows[i]["Consult_id"])).FirstOrDefault().Consult_Full_Name.ToString();
-                        obj.Marketing_Tech = listTech.Where(p => p.Id == Convert.ToInt32(MarketingDetails.Rows[i]["Marketing_Tech"])).FirstOrDefault().Technology_Name.ToString();//dr["Marketing_Tech"] is DBNull ? "" : Convert.ToString(dr["Marketing_Tech"]),
+                        //obj.Marketing_Tech = listTech.Where(p => p.Technology_Name == MarketingDetails.Rows[i]["Marketing_Tech"]).Technology_Name.ToString();//dr["Marketing_Tech"] is DBNull ? "" : Convert.ToString(dr["Marketing_Tech"]),
 
 
                         listMarketing.Add(obj);
@@ -142,7 +142,7 @@ namespace WebApi_New.Models
                     using (SqlCommand dbcommand = new SqlCommand(Query, dbConnection))
                     {
                         dbcommand.CommandType = CommandType.StoredProcedure;
-                        dbcommand.Parameters.AddWithValue("@ConsultantStatusId", SqlDbType.Int).Value = 1;
+                        //dbcommand.Parameters.AddWithValue("@ConsultantStatusId", SqlDbType.Int).Value = 1;
                         dbAdapater = new SqlDataAdapter(dbcommand);
                         dbAdapater.Fill(dtConsult);
                         dbConnection.Close();
