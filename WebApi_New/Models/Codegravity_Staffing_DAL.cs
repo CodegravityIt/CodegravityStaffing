@@ -576,9 +576,14 @@ namespace WebApi_New.Models
 
             try
             {
-                String query = "INSERT INTO [CG].[Consultant_Placement] (Consult_id,Placed_Sales_Recruiter,Placed_Tech,PO_Date,Project_Start_Date,Project_Duration,Bill_Rate,Consultant_Pay_Rate,Vendor_Name,Vendor_Address,Client_Name,Client_Address,Project_End_Date,Visa_Type,Project_Status,Notes)" +
+                String query = "INSERT INTO [CG].[Consultant_Placement] (Consult_id,Placed_Sales_Recruiter,Placed_Tech,PO_Date,Visa_Type,Project_Start_Date,Project_Duration,Project_End_Date," +
+                    "Vendor_Name,Vendor_SPOC_Name,Vendor_SPOC_Email,Vendor_SPOC_PhoneNumber,Vendor_Address,Client_Name," +
+                    "Client_SPOC_Name,Client_SPOC_Email,Client_SPOC_PhoneNumber,Client_Address,Project_Type,Bill_Rate,Consultant_Pay_Rate,Notes,Placement_Status,Created_Date,Created_by,Modified_Date,Modified_by)" +
                     " VALUES " +
-                    "(@Consult_id,@Placed_Sales_Recruiter,@Placed_Tech,@PO_Date,@Project_Start_Date,@Project_Duration,@Bill_Rate,@Consultant_Pay_Rate,@Vendor_Name,@Vendor_Address,@Client_Name,@Client_Address,@Project_End_Date,@Visa_Type,@Project_Status,@Notes)";
+                    "(@Consult_id,@Placed_Sales_Recruiter,@Placed_Tech,@PO_Date,@Visa_Type,@Project_Start_Date,@Project_Duration,@Project_End_Date,@Vendor_Name,@Vendor_SPOC_Name,@Vendor_SPOC_Email," +
+                    "@Vendor_SPOC_PhoneNumber,@Vendor_Address,@Client_Name,@Client_SPOC_Name,@Client_SPOC_Email,@Client_SPOC_PhoneNumber," +
+                    "@Client_Address,@Project_Type,@Bill_Rate,@Consultant_Pay_Rate,@Notes,@Placement_Status,@Created_Date,@Created_by,@Modified_Date,@Modified_by" +
+                    ")";
 
                 DataTable table = new DataTable();
                 string SQlDatasource = _configuration.GetConnectionString("CodeGravityDB");
@@ -590,24 +595,40 @@ namespace WebApi_New.Models
                         mycommand.Parameters.AddWithValue("@Consult_id", em.Consult_id);
                         mycommand.Parameters.AddWithValue("@Placed_Sales_Recruiter", em.Placed_Sales_Recruiter);
                         mycommand.Parameters.AddWithValue("@Placed_Tech", em.Placed_Tech);
-                        mycommand.Parameters.AddWithValue("@PO_Date", em.PO_Date);
-
-                        mycommand.Parameters.AddWithValue("@Project_Start_Date", em.Project_Start_Date);
-                        mycommand.Parameters.AddWithValue("@Project_Duration", em.Project_Duration);
-                        mycommand.Parameters.AddWithValue("@Bill_Rate", em.Bill_Rate);
-
-                        mycommand.Parameters.AddWithValue("@Consultant_Pay_Rate", em.Consultant_Pay_Rate);
-                        mycommand.Parameters.AddWithValue("@Vendor_Name", em.Vendor_Name);
-                        mycommand.Parameters.AddWithValue("@Vendor_Address", em.Vendor_Address);
-
-                        mycommand.Parameters.AddWithValue("@Client_Name", em.Client_Name);
-                        mycommand.Parameters.AddWithValue("@Client_Address", em.Client_Address);
-                        mycommand.Parameters.AddWithValue("@Project_End_Date", em.Project_End_Date);
-
+                        mycommand.Parameters.AddWithValue("@PO_Date", Convert.ToDateTime(em.PO_Date).ToString("MM/dd/yyyy"));
 
                         mycommand.Parameters.AddWithValue("@Visa_Type", em.Visa_Type);
-                        mycommand.Parameters.AddWithValue("@Project_Status", em.Placement_Status);
+                        mycommand.Parameters.AddWithValue("@Project_Start_Date", Convert.ToDateTime(em.Project_Start_Date).ToString("MM/dd/yyyy"));
+                        mycommand.Parameters.AddWithValue("@Project_Duration", em.Project_Duration+" months");
+
+                        mycommand.Parameters.AddWithValue("@Project_End_Date", Convert.ToDateTime(em.Project_End_Date).ToString("MM/dd/yyyy"));
+                        mycommand.Parameters.AddWithValue("@Vendor_Name", em.Vendor_Name);
+                        mycommand.Parameters.AddWithValue("@Vendor_SPOC_Name", em.Vendor_SPOC_Name);
+
+                        mycommand.Parameters.AddWithValue("@Vendor_SPOC_Email", em.Vendor_SPOC_Email);
+                        mycommand.Parameters.AddWithValue("@Vendor_SPOC_PhoneNumber", em.Vendor_SPOC_PhoneNumber);
+                        mycommand.Parameters.AddWithValue("@Vendor_Address", em.Vendor_Address);
+
+
+                        mycommand.Parameters.AddWithValue("@Client_Name", em.Client_Name);
+                        mycommand.Parameters.AddWithValue("@Client_SPOC_Name", em.Client_SPOC_Name);
+                        mycommand.Parameters.AddWithValue("@Client_SPOC_Email", em.Client_SPOC_Email);
+
+
+                        mycommand.Parameters.AddWithValue("@Client_SPOC_PhoneNumber", em.Client_SPOC_PhoneNumber);
+                        mycommand.Parameters.AddWithValue("@Client_Address", em.Client_Address);
+                        mycommand.Parameters.AddWithValue("@Project_Type", em.Project_Type);
+
+
+                        mycommand.Parameters.AddWithValue("@Bill_Rate", "$"+em.Bill_Rate);
+                        mycommand.Parameters.AddWithValue("@Consultant_Pay_Rate", "$" + em.Consultant_Pay_Rate);
                         mycommand.Parameters.AddWithValue("@Notes", em.Notes);
+                        mycommand.Parameters.AddWithValue("@Placement_Status", em.Placement_Status);
+                        mycommand.Parameters.AddWithValue("@Created_Date", DateTime.Now.ToString("MM/dd/yyyy"));
+                        mycommand.Parameters.AddWithValue("@Created_by", em.Created_by);
+
+                        mycommand.Parameters.AddWithValue("@Modified_Date", DateTime.Now.ToString("MM/dd/yyyy"));
+                        mycommand.Parameters.AddWithValue("@Modified_by", em.Modified_by);
 
                         mycon.Open();
                         myReader = mycommand.ExecuteReader();
@@ -649,7 +670,7 @@ namespace WebApi_New.Models
                     {
                         cg_Submissions obj = new cg_Submissions();
                         obj.Id = Convert.ToInt32(SubmissionDetails.Rows[i]["Id"]);
-                        obj.Consult_Id = Convert.ToInt32(SubmissionDetails.Rows[i]["Consult_id"]);
+                        obj.Consult_id = Convert.ToInt32(SubmissionDetails.Rows[i]["Consult_id"]);
                         obj.Recruiter_id = Convert.ToInt32(SubmissionDetails.Rows[i]["Recruiter_id"]);
                         obj.NoOfSubmissions = Convert.ToInt32(SubmissionDetails.Rows[i]["NumberOfSubmissions"]);
 
@@ -741,7 +762,7 @@ namespace WebApi_New.Models
                     {
                         cg_Submissions obj = new cg_Submissions();
                         obj.Id = Convert.ToInt32(SubmissionDetails.Rows[i]["Id"]);
-                        obj.Consult_Id = Convert.ToInt32(SubmissionDetails.Rows[i]["Consult_id"]);
+                        obj.Consult_id = Convert.ToInt32(SubmissionDetails.Rows[i]["Consult_id"]);
                         obj.Recruiter_id = Convert.ToInt32(SubmissionDetails.Rows[i]["Recruiter_id"]);
                         //obj.NoOfSubmissions=Convert.ToInt32(SubmissionDetails.Rows[i]["NumberOfSubmissions"]);
 
@@ -821,5 +842,89 @@ namespace WebApi_New.Models
             return listSubmissions;
         }
 
+        public bool AddNewsubmission(cg_Submissions em)
+        {
+            DataTable dtRecruiters = new DataTable();
+            bool result = false;
+
+
+            try
+            {
+                String query = "INSERT INTO [CG].[Consultant_Placement] (Consult_id,Recruiter_id,Marketing_Tech,Vendor_Name,Vendor_POC_Name,Vendor_POC_Email,Vendor_POC_PhoneNumber,Vendor_Address," +
+                    "Vendor_Name,Vendor_SPOC_Name,Vendor_SPOC_Email,Vendor_SPOC_PhoneNumber,Vendor_Address,Client_Name," +
+                    "End_Client_Name,End_Client_POC_Name,End_Client_POC_Email,End_Client_POC_PhoneNumber,End_Client_Address,Rate_confirmation,Bill_Rate,Assignment_date,Assignment_status,Assignment_done_by," +
+                    "Interview_Schedudule_Date,Interview_Status,submission_status,Created_by,Modified_by,Notes)" +
+                    " VALUES " +
+                    "(@Consult_id,@Recruiter_id,@Marketing_Tech,@Vendor_Name,@Vendor_POC_Name,@Vendor_POC_Email,@Vendor_POC_PhoneNumber,@Vendor_Address,@End_Client_Name,@End_Client_POC_Name,@End_Client_POC_Email,@End_Client_POC_PhoneNumber," +
+                    "@End_Client_Address,@Rate_confirmation,@Bill_Rate,@Assignment_date,@Assignment_status,@Assignment_done_by,@Interview_Schedudule_Date,@Interview_Status,@submission_status,@Created_by," +
+                    "@Modified_by,@Notes)";
+
+                DataTable table = new DataTable();
+                string SQlDatasource = _configuration.GetConnectionString("CodeGravityDB");
+                SqlDataReader myReader;
+                using (SqlConnection mycon = new SqlConnection(SQlDatasource))
+                {
+                    using (SqlCommand mycommand = new SqlCommand(query, mycon))
+                    {
+                        mycommand.Parameters.AddWithValue("@Consult_id", em.Consult_id);
+                        mycommand.Parameters.AddWithValue("@Recruiter_id", em.Recruiter_id);
+                        mycommand.Parameters.AddWithValue("@Marketing_Tech", em.Marketing_Tech);
+                        mycommand.Parameters.AddWithValue("@Vendor_Name", em.Vendor_Name);
+
+                        mycommand.Parameters.AddWithValue("@Vendor_POC_Name", em.Vendor_POC_Name);
+                        mycommand.Parameters.AddWithValue("@Vendor_POC_Email", em.Vendor_POC_Email);
+                        mycommand.Parameters.AddWithValue("@Vendor_POC_PhoneNumber", em.Vendor_POC_PhoneNumber);
+
+                        mycommand.Parameters.AddWithValue("@Vendor_Address",em.Vendor_Address);
+                        mycommand.Parameters.AddWithValue("@End_Client_Name", em.End_Client_Name);
+    
+
+                        mycommand.Parameters.AddWithValue("@End_Client_POC_Name", em.End_Client_POC_Name);
+                        mycommand.Parameters.AddWithValue("@End_Client_POC_Email", em.End_Client_POC_Email);
+                        mycommand.Parameters.AddWithValue("@End_Client_POC_PhoneNumber", em.End_Client_POC_PhoneNumber);
+
+
+                        mycommand.Parameters.AddWithValue("@End_Client_POC_PhoneNumber", em.End_Client_POC_PhoneNumber);
+                        mycommand.Parameters.AddWithValue("@End_Client_Address", em.End_Client_Address);
+                        mycommand.Parameters.AddWithValue("@Rate_confirmation", em.Rate_confirmation);
+
+
+                        mycommand.Parameters.AddWithValue("@Bill_Rate", "$" + em.Bill_Rate);
+                        mycommand.Parameters.AddWithValue("@Assignment_date", Convert.ToDateTime(em.Assignment_date).ToString("MM/dd/yyyy"));
+                        mycommand.Parameters.AddWithValue("@Assignment_status", em.Assignment_status);
+                        mycommand.Parameters.AddWithValue("@Assignment_done_by", em.Assignment_done_by);
+
+                        mycommand.Parameters.AddWithValue("@Interview_Schedudule_Date", Convert.ToDateTime(em.Interview_Schedudule_Date).ToString("MM/dd/yyyy"));
+
+                        mycommand.Parameters.AddWithValue("@Interview_Status", em.Interview_Status);
+                        mycommand.Parameters.AddWithValue("@submission_status", em.submission_status);
+
+                        mycommand.Parameters.AddWithValue("@Created_Date", DateTime.Now.ToString("MM/dd/yyyy"));
+                        mycommand.Parameters.AddWithValue("@Created_by", em.Created_by);
+
+                        mycommand.Parameters.AddWithValue("@Modified_Date", DateTime.Now.ToString("MM/dd/yyyy"));
+                        mycommand.Parameters.AddWithValue("@Modified_by", em.Modified_by);
+                        mycommand.Parameters.AddWithValue("@Notes", em.Notes);
+
+                        mycon.Open();
+                        myReader = mycommand.ExecuteReader();
+                        // table.Load(myReader.af);
+                        if (myReader.RecordsAffected > 0)
+                        {
+                            //updateConsultantStatus(em.Consult_Id, 2);
+                            result = true;
+                        }
+                        myReader.Close();
+                        mycon.Close();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return false;
+            }
+            return result;
+        }
     }
 }

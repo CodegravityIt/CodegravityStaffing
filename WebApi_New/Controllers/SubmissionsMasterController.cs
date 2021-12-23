@@ -41,5 +41,15 @@ namespace WebApi_New.Controllers
 
 
         }
+        [HttpPost]
+        public JsonResult post(cg_Submissions objSubmission)
+        {
+            bool result = ObjPM.AddNewSubmission(objSubmission);
+
+            if (result)
+                return new JsonResult("New market assignment Added Succfully");
+            else
+                return new JsonResult("Failed to add New market assignment ..");
+        }
     }
 }

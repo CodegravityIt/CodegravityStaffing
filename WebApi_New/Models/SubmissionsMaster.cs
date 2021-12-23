@@ -40,5 +40,20 @@ namespace WebApi_New.Models
             }
             return dtSubmissions;
         }
+        public bool AddNewSubmission(cg_Submissions Objsubmission)
+        {
+            bool Isrecordadded = false;
+
+            try
+            {
+                Isrecordadded = objGG_Dal.AddNewsubmission(Objsubmission);
+            }
+            catch (Exception ex)
+            {
+                Isrecordadded = false;
+            }
+            return Isrecordadded;
+
+        }
     }
 }

@@ -71,6 +71,7 @@ namespace WebApi_New.Models
         public int Id { get; set; }
         public int Consult_id { get; set; }
         public string Consult_Name { get; set; }
+        public string Emp_Name { get; set; }
         public string Placed_Sales_Recruiter { get; set; }
         public string Placed_Tech { get; set; }
         public string PO_Date { get; set; }
@@ -142,27 +143,21 @@ namespace WebApi_New.Models
     {
         public int Id { get; set; }
         public int NoOfSubmissions { get; set; }
-        public int Consult_Id { get; set; }
+        public int Consult_id { get; set; }
         public string Consult_Name { get; set; }
         public int Recruiter_id { get; set; }
         public string Recruiter_Name { get; set; }
         public string Marketing_Tech { get; set; }
-
         public string Vendor_Name { get; set; }
         public string Vendor_POC_Name { get; set; }
-
         public string Vendor_Address { get; set; }
         public string Vendor_POC_Email { get; set; }
         public string Vendor_POC_PhoneNumber { get; set; }
-
         public string End_Client_Name { get; set; }
         public string End_Client_POC_Name { get; set; }
-
-
         public string End_Client_POC_Email { get; set; }
         public string End_Client_POC_PhoneNumber { get; set; }
         public string End_Client_Address { get; set; }
-
         public string Rate_confirmation { get; set; }
         public string Bill_Rate { get; set; }
         public string Assignment_date { get; set; }
@@ -173,11 +168,8 @@ namespace WebApi_New.Models
         public string submission_status { get; set; }
         public string Created_date { get; set; }
         public string Created_by { get; set; }
-
-
         public string Modified_Date { get; set; }
         public string Modified_by { get; set; }
-
         public string Notes { get; set; }
 
 
