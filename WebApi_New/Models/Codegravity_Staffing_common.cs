@@ -204,6 +204,9 @@ namespace WebApi_New.Models
 
     }
 
+
+
+
     public class cg_Entitlement
     {
 
@@ -215,6 +218,52 @@ namespace WebApi_New.Models
         public string Entit_status { get; set; }
 
         public string Notes { get; set; }
+
+    }
+
+    public class cg_Incentivedetils
+    {
+
+        public int Id { get; set; }
+
+        public string Consultant_Id { get; set; }
+        public string Recruiter_Id { get; set; }
+        public string IncentiveType { get; set; }
+        public string Project_Start_Date { get; set; }
+
+        public string Term1_IncentivePeriod { get; set; }
+        public string Term1_IncentivepayableDate { get; set; }
+        public string Term1_IncentiveAmount { get; set; }
+        public int Is_Term1_IncentivePaid { get; set; }
+
+        public string Term2_IncentivePeriod { get; set; }
+        public string Term2_IncentivePayableDate { get; set; }
+        public string Term2_IncentiveAmount { get; set; }
+        public int Is_Term2_IncentivePaid { get; set; }
+
+
+        public string Term3_IncentivePeriod { get; set; }
+        public string Term3_IncentivePayableDate { get; set; }
+        public string Term3_IncentiveAmount { get; set; }
+        public int Is_Term3_IncentivePaid { get; set; }
+
+
+        public string Term4_IncentivePeriod { get; set; }
+        public string Term4_IncentivePayableDate { get; set; }
+        public string Term4_IncentiveAmount { get; set; }
+        public int Is_Term4_IncentivePaid { get; set; }
+
+        public string Comments { get; set; }
+        public string Notes1 { get; set; }
+        public string Notes2 { get; set; }
+        public string Created_Date { get; set; }
+        public string Created_by { get; set; }
+        public string Modified_Date { get; set; }
+        public string Modified_by { get; set; }
+        public string Incentive_Status { get; set; }
+
+
+
 
     }
 }

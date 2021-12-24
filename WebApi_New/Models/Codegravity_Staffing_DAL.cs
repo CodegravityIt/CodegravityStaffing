@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -57,6 +58,7 @@ namespace WebApi_New.Models
             // List<cg_Consultant> listConsultant = getConsultDetails(1);
             List<cg_Consultant> listConsultant = getConsultDetails();
 
+
             List<cg_Technology> listTech = getTechnologyDetails();
             try
             {
@@ -79,7 +81,7 @@ namespace WebApi_New.Models
                         obj.Marketing_Status = Convert.ToString(MarketingDetails.Rows[i]["Marketing_Status"]);
                         obj.Notes = Convert.ToString(MarketingDetails.Rows[i]["Notes"]);
                         obj.Consult_Name = listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(MarketingDetails.Rows[i]["Consult_id"])).FirstOrDefault().Consult_Full_Name.ToString();
-                        //obj.Marketing_Tech = listTech.Where(p => p.Technology_Name == MarketingDetails.Rows[i]["Marketing_Tech"]).Technology_Name.ToString();//dr["Marketing_Tech"] is DBNull ? "" : Convert.ToString(dr["Marketing_Tech"]),
+                        obj.Marketing_Tech = listTech.Where(p => p.Id == Convert.ToInt32(MarketingDetails.Rows[i]["Marketing_Tech"])).FirstOrDefault().Technology_Name;//dr["Marketing_Tech"] is DBNull ? "" : Convert.ToString(dr["Marketing_Tech"]),
 
 
                         listMarketing.Add(obj);
@@ -599,7 +601,7 @@ namespace WebApi_New.Models
 
                         mycommand.Parameters.AddWithValue("@Visa_Type", em.Visa_Type);
                         mycommand.Parameters.AddWithValue("@Project_Start_Date", Convert.ToDateTime(em.Project_Start_Date).ToString("MM/dd/yyyy"));
-                        mycommand.Parameters.AddWithValue("@Project_Duration", em.Project_Duration+" months");
+                        mycommand.Parameters.AddWithValue("@Project_Duration", em.Project_Duration + " months");
 
                         mycommand.Parameters.AddWithValue("@Project_End_Date", Convert.ToDateTime(em.Project_End_Date).ToString("MM/dd/yyyy"));
                         mycommand.Parameters.AddWithValue("@Vendor_Name", em.Vendor_Name);
@@ -620,7 +622,7 @@ namespace WebApi_New.Models
                         mycommand.Parameters.AddWithValue("@Project_Type", em.Project_Type);
 
 
-                        mycommand.Parameters.AddWithValue("@Bill_Rate", "$"+em.Bill_Rate);
+                        mycommand.Parameters.AddWithValue("@Bill_Rate", "$" + em.Bill_Rate);
                         mycommand.Parameters.AddWithValue("@Consultant_Pay_Rate", "$" + em.Consultant_Pay_Rate);
                         mycommand.Parameters.AddWithValue("@Notes", em.Notes);
                         mycommand.Parameters.AddWithValue("@Placement_Status", em.Placement_Status);
@@ -635,7 +637,7 @@ namespace WebApi_New.Models
                         // table.Load(myReader.af);
                         if (myReader.RecordsAffected > 0)
                         {
-                            //updateConsultantStatus(em.Consult_Id, 2);
+                            AddIncentivedetailsFromplacement(em);
                             result = true;
                         }
                         myReader.Close();
@@ -850,7 +852,7 @@ namespace WebApi_New.Models
 
             try
             {
-                String query = "INSERT INTO [CG].[Consultant_Placement] (Consult_id,Recruiter_id,Marketing_Tech,Vendor_Name,Vendor_POC_Name,Vendor_POC_Email,Vendor_POC_PhoneNumber,Vendor_Address," +
+                String query = "INSERT INTO [CG].[Consult_Marketing_Submission] (Consult_id,Recruiter_id,Marketing_Tech,Vendor_Name,Vendor_POC_Name,Vendor_POC_Email,Vendor_POC_PhoneNumber,Vendor_Address," +
                     "Vendor_Name,Vendor_SPOC_Name,Vendor_SPOC_Email,Vendor_SPOC_PhoneNumber,Vendor_Address,Client_Name," +
                     "End_Client_Name,End_Client_POC_Name,End_Client_POC_Email,End_Client_POC_PhoneNumber,End_Client_Address,Rate_confirmation,Bill_Rate,Assignment_date,Assignment_status,Assignment_done_by," +
                     "Interview_Schedudule_Date,Interview_Status,submission_status,Created_by,Modified_by,Notes)" +
@@ -875,9 +877,9 @@ namespace WebApi_New.Models
                         mycommand.Parameters.AddWithValue("@Vendor_POC_Email", em.Vendor_POC_Email);
                         mycommand.Parameters.AddWithValue("@Vendor_POC_PhoneNumber", em.Vendor_POC_PhoneNumber);
 
-                        mycommand.Parameters.AddWithValue("@Vendor_Address",em.Vendor_Address);
+                        mycommand.Parameters.AddWithValue("@Vendor_Address", em.Vendor_Address);
                         mycommand.Parameters.AddWithValue("@End_Client_Name", em.End_Client_Name);
-    
+
 
                         mycommand.Parameters.AddWithValue("@End_Client_POC_Name", em.End_Client_POC_Name);
                         mycommand.Parameters.AddWithValue("@End_Client_POC_Email", em.End_Client_POC_Email);
@@ -926,5 +928,247 @@ namespace WebApi_New.Models
             }
             return result;
         }
+
+
+        public bool AddIncentivedetailsFromApi(cg_Incentivedetils em)
+        {
+            DataTable dtRecruiters = new DataTable();
+            bool result = false;
+
+
+            try
+            {
+                String query = "INSERT INTO [CG].[[EmployeeIncentiveDetails]] (Consultant_Id,Recruiter_Id,Project_Start_Date,IncentiveType,Term1_IncentivePeriod,Term1_IncentivepayableDate,Term1_IncentiveAmount,Is_Term1_IncentivePaid,Term2_IncentivePeriod," +
+                    "Term2_IncentivePayableDate,Term2_IncentiveAmount,Is_Term2_IncentivePaid,Term3_IncentivePeriod,Term3_IncentivePayableDate,Term3_IncentiveAmount," +
+                    "Is_Term3_IncentivePaid,Term4_IncentivePeriod,Term4_IncentivePayableDate,Term4_IncentiveAmount,Is_Term4_IncentivePaid,Comments,Notes1,Notes2,Created_Date,Created_by,Modified_Date,Modified_by,Incentive_Status)" +
+                    " VALUES " +
+                    "(@Consultant_Id,@Recruiter_Id,@Project_Start_Date,@IncentiveType,@Term1_IncentivePeriod,@Term1_IncentivepayableDate,@Term1_IncentiveAmount,@Is_Term1_IncentivePaid,@Term2_IncentivePeriod,@Term2_IncentivePayableDate,@Term2_IncentiveAmount,@Is_Term2_IncentivePaid," +
+                    "@Term3_IncentivePeriod,@Term3_IncentivePayableDate,@Term3_IncentiveAmount,@Is_Term3_IncentivePaid,@Term4_IncentivePeriod,@Term4_IncentivePayableDate," +
+                    "@Term4_IncentiveAmount,@Is_Term4_IncentivePaid,@Comments,@Notes1,@Notes2,@Placement_Status,@Created_Date,@Created_by,@Modified_Date,@Modified_by,@Incentive_Status" +
+                    ")";
+
+                DataTable table = new DataTable();
+                string SQlDatasource = _configuration.GetConnectionString("CodeGravityDB");
+                SqlDataReader myReader;
+                using (SqlConnection mycon = new SqlConnection(SQlDatasource))
+                {
+                    using (SqlCommand mycommand = new SqlCommand(query, mycon))
+                    {
+                        mycommand.Parameters.AddWithValue("@Consult_id", em.Consultant_Id);
+                        mycommand.Parameters.AddWithValue("@Recruiter_Id", em.Recruiter_Id);
+                        mycommand.Parameters.AddWithValue("@Project_Start_Date", em.Project_Start_Date);                        
+                        mycommand.Parameters.AddWithValue("@IncentiveType", em.IncentiveType);
+
+                        mycommand.Parameters.AddWithValue("@Term1_IncentivePeriod", em.Term1_IncentivePeriod);
+                        mycommand.Parameters.AddWithValue("@Term1_IncentivepayableDate", Convert.ToDateTime(em.Term1_IncentivepayableDate).ToString("MM/dd/yyyy"));
+                        mycommand.Parameters.AddWithValue("@Term1_IncentiveAmount", Convert.ToDecimal(em.Term1_IncentiveAmount));
+                        mycommand.Parameters.AddWithValue("@Is_Term1_IncentivePaid", em.Is_Term1_IncentivePaid);
+
+
+                        mycommand.Parameters.AddWithValue("@Term2_IncentivePeriod", em.Term2_IncentivePeriod);
+                        mycommand.Parameters.AddWithValue("@Term2_IncentivePayableDate", Convert.ToDateTime(em.Term2_IncentivePayableDate).ToString("MM/dd/yyyy"));
+                        mycommand.Parameters.AddWithValue("@Term2_IncentiveAmount", Convert.ToDecimal(em.Term2_IncentiveAmount));
+                        mycommand.Parameters.AddWithValue("@Is_Term2_IncentivePaid", em.Is_Term2_IncentivePaid);
+
+
+                        mycommand.Parameters.AddWithValue("@Term3_IncentivePeriod", em.Term3_IncentivePeriod);
+                        mycommand.Parameters.AddWithValue("@Term3_IncentivePayableDate", Convert.ToDateTime(em.Term3_IncentivePayableDate).ToString("MM/dd/yyyy"));
+                        mycommand.Parameters.AddWithValue("@Term3_IncentiveAmount", Convert.ToDecimal(em.Term3_IncentiveAmount));
+                        mycommand.Parameters.AddWithValue("@Is_Term3_IncentivePaid", em.Is_Term3_IncentivePaid);
+
+
+                        mycommand.Parameters.AddWithValue("@Term4_IncentivePeriod", em.Term4_IncentivePeriod);
+                        mycommand.Parameters.AddWithValue("@Term4_IncentivePayableDate", Convert.ToDateTime(em.Term4_IncentivePayableDate).ToString("MM/dd/yyyy"));
+                        mycommand.Parameters.AddWithValue("@Term4_IncentiveAmount", Convert.ToDecimal(em.Term4_IncentiveAmount));
+                        mycommand.Parameters.AddWithValue("@Is_Term4_IncentivePaid", em.Is_Term4_IncentivePaid);
+
+
+                        mycommand.Parameters.AddWithValue("@Comments", em.Comments);
+                        mycommand.Parameters.AddWithValue("@Notes1", em.Notes1);
+                        mycommand.Parameters.AddWithValue("@Notes2", em.Notes2);
+                        mycommand.Parameters.AddWithValue("@Created_Date", DateTime.Now.ToString("MM/dd/yyyy"));
+                        mycommand.Parameters.AddWithValue("@Created_by", em.Created_by);
+
+
+                        mycommand.Parameters.AddWithValue("@Modified_Date", DateTime.Now.ToString("MM/dd/yyyy"));
+                        mycommand.Parameters.AddWithValue("@Modified_by", em.Modified_by);
+                        mycommand.Parameters.AddWithValue("@Incentive_Status", em.Incentive_Status);
+
+                        mycon.Open();
+                        myReader = mycommand.ExecuteReader();
+                        // table.Load(myReader.af);
+                        if (myReader.RecordsAffected > 0)
+                        {
+                            //updateConsultantStatus(em.Consult_Id, 2);
+                            result = true;
+                        }
+                        myReader.Close();
+                        mycon.Close();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return false;
+            }
+            return result;
+        }
+
+        public bool AddIncentivedetailsFromplacement(cg_Placement placement)
+        {
+            DataTable dtRecruiters = new DataTable();
+            bool result = false;
+            List<cg_Employees> listemp = getEmployeeDetails();
+            int employeIncentivetype = listemp.Where(p => p.Emp_Id == Convert.ToInt32(placement.Placed_Sales_Recruiter)).FirstOrDefault().Emp_IncentiveType;
+            cg_Incentivedetils CalculatedIncentives=calculateIncetives(placement.Project_Start_Date, employeIncentivetype);
+
+            cg_Incentivedetils em = new cg_Incentivedetils();
+            try
+            {
+                String query = "INSERT INTO [CG].[[EmployeeIncentiveDetails]] (Consultant_Id,Recruiter_Id,Project_Start_Date,IncentiveType,Term1_IncentivePeriod,Term1_IncentivepayableDate,Term1_IncentiveAmount,Is_Term1_IncentivePaid,Term2_IncentivePeriod," +
+                    "Term2_IncentivePayableDate,Term2_IncentiveAmount,Is_Term2_IncentivePaid,Term3_IncentivePeriod,Term3_IncentivePayableDate,Term3_IncentiveAmount," +
+                    "Is_Term3_IncentivePaid,Term4_IncentivePeriod,Term4_IncentivePayableDate,Term4_IncentiveAmount,Is_Term4_IncentivePaid,Comments,Notes1,Notes2,Created_Date,Created_by,Modified_Date,Modified_by,Incentive_Status)" +
+                    " VALUES " +
+                    "(@Consultant_Id,@Recruiter_Id,@Project_Start_Date,@IncentiveType,@Term1_IncentivePeriod,@Term1_IncentivepayableDate,@Term1_IncentiveAmount,@Is_Term1_IncentivePaid,@Term2_IncentivePeriod,@Term2_IncentivePayableDate,@Term2_IncentiveAmount,@Is_Term2_IncentivePaid," +
+                    "@Term3_IncentivePeriod,@Term3_IncentivePayableDate,@Term3_IncentiveAmount,@Is_Term3_IncentivePaid,@Term4_IncentivePeriod,@Term4_IncentivePayableDate," +
+                    "@Term4_IncentiveAmount,@Is_Term4_IncentivePaid,@Comments,@Notes1,@Notes2,@Placement_Status,@Created_Date,@Created_by,@Modified_Date,@Modified_by,@Incentive_Status" +
+                    ")";
+
+                DataTable table = new DataTable();
+                string SQlDatasource = _configuration.GetConnectionString("CodeGravityDB");
+                SqlDataReader myReader;
+                using (SqlConnection mycon = new SqlConnection(SQlDatasource))
+                {
+                    using (SqlCommand mycommand = new SqlCommand(query, mycon))
+                    {
+                        mycommand.Parameters.AddWithValue("@Consultant_Id", placement.Consult_id);
+                        mycommand.Parameters.AddWithValue("@Recruiter_Id", placement.Placed_Sales_Recruiter);
+                        mycommand.Parameters.AddWithValue("@Project_Start_Date", placement.Project_Start_Date);                        
+                        mycommand.Parameters.AddWithValue("@IncentiveType", employeIncentivetype);
+
+
+                        mycommand.Parameters.AddWithValue("@Term1_IncentivePeriod", CalculatedIncentives.Term1_IncentivePeriod);
+                        mycommand.Parameters.AddWithValue("@Term1_IncentivepayableDate", Convert.ToDateTime(CalculatedIncentives.Term1_IncentivepayableDate).ToString("MM/dd/yyyy")); 
+                        mycommand.Parameters.AddWithValue("@Term1_IncentiveAmount", Convert.ToDecimal(CalculatedIncentives.Term1_IncentiveAmount));
+                        mycommand.Parameters.AddWithValue("@Is_Term1_IncentivePaid", CalculatedIncentives.Is_Term1_IncentivePaid);
+
+
+                        mycommand.Parameters.AddWithValue("@Term2_IncentivePeriod", CalculatedIncentives.Term2_IncentivePeriod);
+                        mycommand.Parameters.AddWithValue("@Term2_IncentivePayableDate", Convert.ToDateTime(CalculatedIncentives.Term2_IncentivePayableDate).ToString("MM/dd/yyyy"));
+                        mycommand.Parameters.AddWithValue("@Term2_IncentiveAmount", Convert.ToDecimal(CalculatedIncentives.Term2_IncentiveAmount));
+                        mycommand.Parameters.AddWithValue("@Is_Term2_IncentivePaid", CalculatedIncentives.Is_Term2_IncentivePaid);
+
+
+                        mycommand.Parameters.AddWithValue("@Term3_IncentivePeriod", CalculatedIncentives.Term3_IncentivePeriod);
+                        mycommand.Parameters.AddWithValue("@Term3_IncentivePayableDate", Convert.ToDateTime(CalculatedIncentives.Term3_IncentivePayableDate).ToString("MM/dd/yyyy"));
+                        mycommand.Parameters.AddWithValue("@Term3_IncentiveAmount", Convert.ToDecimal(CalculatedIncentives.Term3_IncentiveAmount));
+                        mycommand.Parameters.AddWithValue("@Is_Term3_IncentivePaid", CalculatedIncentives.Is_Term3_IncentivePaid);
+
+
+                        mycommand.Parameters.AddWithValue("@Term4_IncentivePeriod", CalculatedIncentives.Term4_IncentivePeriod);
+                        mycommand.Parameters.AddWithValue("@Term4_IncentivePayableDate", Convert.ToDateTime(CalculatedIncentives.Term4_IncentivePayableDate).ToString("MM/dd/yyyy"));
+                        mycommand.Parameters.AddWithValue("@Term4_IncentiveAmount", Convert.ToDecimal(CalculatedIncentives.Term4_IncentiveAmount));
+                        mycommand.Parameters.AddWithValue("@Is_Term4_IncentivePaid", CalculatedIncentives.Is_Term4_IncentivePaid);
+
+
+                        mycommand.Parameters.AddWithValue("@Comments", "");
+                        mycommand.Parameters.AddWithValue("@Notes1", placement.Notes);
+                        mycommand.Parameters.AddWithValue("@Notes2", "");
+                        mycommand.Parameters.AddWithValue("@Created_Date", DateTime.Now.ToString("MM/dd/yyyy"));
+                        mycommand.Parameters.AddWithValue("@Created_by", em.Created_by);
+
+
+                        mycommand.Parameters.AddWithValue("@Modified_Date", DateTime.Now.ToString("MM/dd/yyyy"));
+                        mycommand.Parameters.AddWithValue("@Modified_by", em.Modified_by);
+                        mycommand.Parameters.AddWithValue("@Incentive_Status", "1");
+
+                        mycon.Open();
+                        myReader = mycommand.ExecuteReader();
+                        // table.Load(myReader.af);
+                        if (myReader.RecordsAffected > 0)
+                        {
+                            //updateConsultantStatus(em.Consult_Id, 2);
+                            result = true;
+                        }
+                        myReader.Close();
+                        mycon.Close();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return false;
+            }
+            return result;
+        }
+
+        public cg_Incentivedetils calculateIncetives(string Project_Start_Date,int Incentivetype)
+        {
+            cg_Incentivedetils objIncentives = new cg_Incentivedetils();
+            List<cg_Incentives> incentiveTypeList = getIncentivetypeDetails();
+
+            try
+            {
+                DateTime dtprojstartdate = DateTime.ParseExact(Project_Start_Date, "MM/dd/yyyy", CultureInfo.InvariantCulture);
+
+
+                DateTime term1 = dtprojstartdate.AddMonths(3);
+                string Term1_IncentivePeriod = String.Format("{0: d MMMM  yyyy}", dtprojstartdate) + "--" + String.Format("{0: d MMMM  yyyy}", term1);
+                DateTime Term1_Incentivemonth = term1.AddMonths(1).Date;
+                string Term1_IncentivepayableDate = new DateTime(Term1_Incentivemonth.Year, Term1_Incentivemonth.Month, 1).ToString("MM/dd/yyyy");
+
+                objIncentives.Term1_IncentiveAmount = incentiveTypeList.Where(p=>p.Incentive_Id==Incentivetype).FirstOrDefault().Incentive_Amount;
+                objIncentives.Term1_IncentivepayableDate = Term1_IncentivepayableDate;
+                objIncentives.Term1_IncentivePeriod = Term1_IncentivePeriod;
+                objIncentives.Is_Term1_IncentivePaid = 0;
+
+
+                DateTime term2 = dtprojstartdate.AddMonths(6);
+                string Term2_IncentivePeriod = String.Format("{0: d MMMM  yyyy}", term1) + "--" + String.Format("{0: d MMMM  yyyy}", term2);
+                DateTime Term2_Incentivemonth = term2.AddMonths(1).Date;
+                string Term2_IncentivepayableDate = new DateTime(Term2_Incentivemonth.Year, Term2_Incentivemonth.Month, 1).ToString("MM/dd/yyyy");
+                
+                objIncentives.Term2_IncentiveAmount = incentiveTypeList.Where(p => p.Incentive_Id == Incentivetype).FirstOrDefault().Incentive_Amount;
+                objIncentives.Term2_IncentivePayableDate = Term2_IncentivepayableDate;
+                objIncentives.Term2_IncentivePeriod = Term2_IncentivePeriod;
+                objIncentives.Is_Term2_IncentivePaid = 0;
+
+
+                DateTime term3 = dtprojstartdate.AddMonths(9);
+                string Term3_IncentivePeriod = String.Format("{0: d MMMM  yyyy}", term2) + "--" + String.Format("{0: d MMMM  yyyy}", term3);
+                DateTime Term3_Incentivemonth = term3.AddMonths(1).Date;
+                string Term3_IncentivepayableDate = new DateTime(Term3_Incentivemonth.Year, Term3_Incentivemonth.Month, 1).ToString("MM/dd/yyyy");
+
+                objIncentives.Term3_IncentiveAmount = incentiveTypeList.Where(p => p.Incentive_Id == Incentivetype).FirstOrDefault().Incentive_Amount;
+                objIncentives.Term3_IncentivePayableDate = Term3_IncentivepayableDate;
+                objIncentives.Term3_IncentivePeriod = Term3_IncentivePeriod;
+                objIncentives.Is_Term3_IncentivePaid = 0;
+
+
+
+
+                DateTime term4 = dtprojstartdate.AddMonths(12);
+
+                string Term4_IncentivePeriod = String.Format("{0: d MMMM  yyyy}", term3) + "--" + String.Format("{0: d MMMM  yyyy}", term4);
+                DateTime Term4_Incentivemonth = term4.AddMonths(1).Date;
+                string Term4_IncentivepayableDate = new DateTime(Term4_Incentivemonth.Year, Term4_Incentivemonth.Month, 1).ToString("MM/dd/yyyy");
+
+                objIncentives.Term4_IncentiveAmount = incentiveTypeList.Where(p => p.Incentive_Id == Incentivetype).FirstOrDefault().Incentive_Amount;
+                objIncentives.Term4_IncentivePayableDate = Term4_IncentivepayableDate;
+                objIncentives.Term4_IncentivePeriod = Term4_IncentivePeriod;
+                objIncentives.Is_Term4_IncentivePaid = 0;
+            }
+            catch (Exception ex)
+            {
+
+                //throw;
+            }
+
+            return objIncentives;
+
+        }
+
     }
 }
