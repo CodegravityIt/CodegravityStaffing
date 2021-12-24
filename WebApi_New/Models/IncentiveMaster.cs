@@ -30,5 +30,19 @@ namespace WebApi_New.Models
             return listEmployee;
 
         }
+
+        public List<cg_Incentivedetils> GetIncentiveDetails() {
+
+            List<cg_Incentivedetils> listIncentiveDetails = new List<cg_Incentivedetils>();
+
+            try
+            {
+                listIncentiveDetails = objGG_Dal.getIncentivedetails();
+            }
+            catch (Exception ex)
+            {
+            }
+            return listIncentiveDetails;
+            }
     }
 }

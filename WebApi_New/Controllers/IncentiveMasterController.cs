@@ -9,7 +9,7 @@ using WebApi_New.Models;
 
 namespace WebApi_New.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class IncentiveMasterController : ControllerBase
     {
@@ -22,11 +22,25 @@ namespace WebApi_New.Controllers
             _configuration = configuration;
         }
         [HttpGet]
+        [ActionName("GetAll")]
         public JsonResult Get()
         {
 
-            return new JsonResult(ObjIM.GetIncentivetypeDetails());
+            return new JsonResult(ObjIM.GetIncentiveDetails());
+
 
         }
+        [HttpGet]
+        [ActionName("")]
+        public JsonResult GetincentiveDetails()
+        {
+            //return new JsonResult("called new method");
+
+
+            return new JsonResult(ObjIM.GetIncentivetypeDetails());
+
+
+        }
+
     }
 }

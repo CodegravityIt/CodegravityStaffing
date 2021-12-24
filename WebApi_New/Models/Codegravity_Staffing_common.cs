@@ -226,8 +226,10 @@ namespace WebApi_New.Models
 
         public int Id { get; set; }
 
-        public string Consultant_Id { get; set; }
-        public string Recruiter_Id { get; set; }
+        public int Consultant_Id { get; set; }
+        public int  Recruiter_Id { get; set; }
+        public string Consultant_Name { get; set; }
+        public string Recruiter_Name { get; set; }
         public string IncentiveType { get; set; }
         public string Project_Start_Date { get; set; }
 

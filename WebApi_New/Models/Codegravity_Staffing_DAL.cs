@@ -387,7 +387,7 @@ namespace WebApi_New.Models
 
             try
             {
-                dtincentivetype = dynamicTableData("[dbo].[Sp_Getincentivedetails]");
+                dtincentivetype = dynamicTableData("[dbo].[Sp_Getincentivemaster]");
 
 
                 if (dtincentivetype != null && dtincentivetype.Rows.Count > 0)
@@ -1168,6 +1168,79 @@ namespace WebApi_New.Models
 
             return objIncentives;
 
+        }
+
+
+        public List<cg_Incentivedetils> getIncentivedetails()
+        {
+            DataTable dtincentivedetails = new DataTable();
+
+            List<cg_Incentivedetils> listIncentivesdetails = new List<cg_Incentivedetils>();
+            List<cg_Employees> listemp = getEmployeeDetails();
+            List<cg_Consultant> listconsultant = getConsultDetails();
+           
+
+            try
+            {
+                dtincentivedetails = dynamicTableData("[dbo].[Sp_Getincentivedetails]");
+
+
+                if (dtincentivedetails != null && dtincentivedetails.Rows.Count > 0)
+                {
+
+                    listIncentivesdetails = (from DataRow dr in dtincentivedetails.Rows
+                                             select new cg_Incentivedetils()
+                                             {
+                                                 Id = dr["Id"] is DBNull ? 0 : Convert.ToInt32(dr["Id"]),
+                                                 Consultant_Id = dr["Consultant_Id"] is DBNull ? 0 : Convert.ToInt32(dr["Consultant_Id"]),
+                                                 Consultant_Name = listconsultant.Where(p => p.Consult_Id == Convert.ToInt32(dr["Consultant_Id"])).FirstOrDefault().Consult_Full_Name,
+                                                 Recruiter_Id = dr["Recruiter_Id"] is DBNull ? 0 : Convert.ToInt32(dr["Recruiter_Id"]),
+                                                 Recruiter_Name= listemp.Where(p=>p.Emp_Id== Convert.ToInt32(dr["Recruiter_Id"])).FirstOrDefault().Emp_FullName,
+                                                 IncentiveType = dr["IncentiveType"] is DBNull ? "" : Convert.ToString(dr["IncentiveType"]),
+                                                 Project_Start_Date = dr["Project_Start_Date"] is DBNull ? "" : Convert.ToDateTime(dr["Project_Start_Date"]).ToString("MM/dd/yyyy"),
+
+                                                 Term1_IncentivePeriod = dr["Term1_IncentivePeriod"] is DBNull ? "" : Convert.ToString(dr["Term1_IncentivePeriod"]),
+                                                 Term1_IncentivepayableDate = dr["Term1_IncentivepayableDate"] is DBNull ? "" : Convert.ToDateTime(dr["Term1_IncentivepayableDate"]).ToString("MM/dd/yyyy"),
+                                                 Term1_IncentiveAmount = dr["Term1_IncentiveAmount"] is DBNull ? "" : Convert.ToString(dr["Term1_IncentiveAmount"]),
+                                                 Is_Term1_IncentivePaid = dr["Is_Term1_IncentivePaid"] is DBNull ? 0 : Convert.ToInt32(dr["Is_Term1_IncentivePaid"]),
+
+                                                 Term2_IncentivePeriod = dr["Term2_IncentivePeriod"] is DBNull ? "" : Convert.ToString(dr["Term2_IncentivePeriod"]),
+                                                 Term2_IncentivePayableDate = dr["Term2_IncentivePayableDate"] is DBNull ? "" : Convert.ToDateTime(dr["Term2_IncentivePayableDate"]).ToString("MM/dd/yyyy"),
+                                                 Term2_IncentiveAmount = dr["Term2_IncentiveAmount"] is DBNull ? "" : Convert.ToString(dr["Term2_IncentiveAmount"]),
+                                                 Is_Term2_IncentivePaid = dr["Is_Term2_IncentivePaid"] is DBNull ? 0 : Convert.ToInt32(dr["Is_Term2_IncentivePaid"]),
+
+                                                 Term3_IncentivePeriod = dr["Term3_IncentivePeriod"] is DBNull ? "" : Convert.ToString(dr["Term3_IncentivePeriod"]),
+                                                 Term3_IncentivePayableDate = dr["Term3_IncentivePayableDate"] is DBNull ? "" : Convert.ToDateTime(dr["Term3_IncentivePayableDate"]).ToString("MM/dd/yyyy"),
+                                                 Term3_IncentiveAmount = dr["Term3_IncentiveAmount"] is DBNull ? "" : Convert.ToString(dr["Term3_IncentiveAmount"]),
+                                                 Is_Term3_IncentivePaid = dr["Is_Term3_IncentivePaid"] is DBNull ? 0 : Convert.ToInt32(dr["Is_Term3_IncentivePaid"]),
+
+                                                 Term4_IncentivePeriod = dr["Term4_IncentivePeriod"] is DBNull ? "" : Convert.ToString(dr["Term4_IncentivePeriod"]),
+                                                 Term4_IncentivePayableDate = dr["Term4_IncentivePayableDate"] is DBNull ? "" : Convert.ToDateTime(dr["Term4_IncentivePayableDate"]).ToString("MM/dd/yyyy"),
+                                                 Term4_IncentiveAmount = dr["Term4_IncentiveAmount"] is DBNull ? "" : Convert.ToString(dr["Term4_IncentiveAmount"]).ToString(),
+                                                 Is_Term4_IncentivePaid = dr["Is_Term4_IncentivePaid"] is DBNull ? 0 : Convert.ToInt32(dr["Is_Term4_IncentivePaid"]),
+
+                                                 Comments = dr["Comments"] is DBNull ? "" : Convert.ToString(dr["Comments"]),
+                                                 Notes1 = dr["Notes1"] is DBNull ? "" : Convert.ToString(dr["Notes1"]),
+                                                 Notes2 = dr["Notes2"] is DBNull ? "" : Convert.ToString(dr["Notes2"]),
+
+                                                 Created_Date = dr["Created_Date"] is DBNull ? "" : Convert.ToDateTime(dr["Created_Date"]).ToString("MM/dd/yyyy"),
+                                                 Created_by = dr["Created_by"] is DBNull ? "" : Convert.ToString(dr["Created_by"]),
+                                                 Modified_Date = dr["Modified_Date"] is DBNull ? "" : Convert.ToDateTime(dr["Modified_Date"]).ToString("MM/dd/yyyy"),
+                                                 Modified_by = dr["Modified_by"] is DBNull ? "" : Convert.ToString(dr["Modified_by"]),
+
+                                                 Incentive_Status = dr["Incentive_Status"] is DBNull ? "" : Convert.ToString(dr["Incentive_Status"])
+
+                                             }).ToList();
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return null;
+            }
+            return listIncentivesdetails;
         }
 
     }
