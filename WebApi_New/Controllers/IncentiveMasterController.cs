@@ -42,5 +42,18 @@ namespace WebApi_New.Controllers
 
         }
 
+        [HttpPost]
+        public JsonResult post(cg_Incentivedetils em)
+        {
+            //          
+
+            bool result = true;//ObjEM.AddEmployeeDetails(em);
+
+            if (result)
+                return new JsonResult("Employee details Added Succfully");
+            else
+                return new JsonResult("Failed to add Employee details..");
+        }
+
     }
 }
