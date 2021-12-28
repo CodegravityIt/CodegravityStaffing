@@ -27,7 +27,7 @@ namespace WebApi_New.Controllers
         [ActionName("")]
         public JsonResult Get()
         {
-            //DataTable result = ObjCM.getMarketingDetails();
+        
             return new JsonResult(ObjPM.getSubmissionslist());
         }
 
@@ -35,7 +35,7 @@ namespace WebApi_New.Controllers
         [ActionName("GetAll")]
         public JsonResult GetSubmissionDetails()
         {
-            //return new JsonResult("called new method");
+         
 
             return new JsonResult(ObjPM.getSubmissionsdetails());
 
@@ -47,9 +47,9 @@ namespace WebApi_New.Controllers
             bool result = ObjPM.AddNewSubmission(objSubmission);
 
             if (result)
-                return new JsonResult("New market assignment Added Succfully");
+                return new JsonResult("New submission Added Succfully");
             else
-                return new JsonResult("Failed to add New market assignment ..");
+                return new JsonResult("Failed to add New submission ..");
         }
     }
 }
