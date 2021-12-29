@@ -21,13 +21,13 @@ namespace WebApi_New.Models
         }
 
 
-        public List<cg_Consultant> GetConsultDetails()
+        public List<cg_Consultant> GetConsultDetails(int statusid)
         {
             List<cg_Consultant> listConsult = new List<cg_Consultant>();
 
             try
             {
-                listConsult = objGG_Dal.getConsultDetails();
+                listConsult = objGG_Dal.getConsultDetails(statusid);
             }
             catch (Exception ex)
             {

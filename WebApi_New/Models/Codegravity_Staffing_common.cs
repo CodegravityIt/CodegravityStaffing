@@ -9,6 +9,7 @@ namespace WebApi_New.Models
     {
         public int Id { get; set; }
         public int Consult_Id { get; set; }
+        public int Recruiter_Id { get; set; }
         public string Consult_Name { get; set; }
 
         public string Assigned_Sales_Recruiter { get; set; }
@@ -42,7 +43,7 @@ namespace WebApi_New.Models
         public string Consult_Address { get; set; }
         public string Consult_Technology { get; set; }
         public string Consult_VisaStatus { get; set; }
-        public int Consult_Status { get; set; }
+        public string Consult_Status { get; set; }
 
         public string Consult_DOB { get; set; }
         public string Consult_Full_Name { get; set; }
@@ -122,6 +123,18 @@ namespace WebApi_New.Models
 
         public string Technology_Description { get; set; }
         public string Notes { get; set; }
+
+    }
+    public class cg_MarketingStatus
+    {
+
+        public int Id { get; set; }
+
+        public string Status_Name { get; set; }
+
+        public string Status_Description { get; set; }
+        public string Notes { get; set; }
+        public int active { get; set; }
 
     }
     public class cg_VisaType

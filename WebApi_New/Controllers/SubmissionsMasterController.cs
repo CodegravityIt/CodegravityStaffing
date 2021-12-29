@@ -42,6 +42,7 @@ namespace WebApi_New.Controllers
 
         }
         [HttpPost]
+        [ActionName("add")]
         public JsonResult post(cg_Submissions objSubmission)
         {
             bool result = ObjPM.AddNewSubmission(objSubmission);

@@ -56,7 +56,7 @@ namespace WebApi_New.Models
             List<cg_Marketing> listMarketing = new List<cg_Marketing>();
             List<cg_Employees> listemployee = getEmployeeDetails();
             // List<cg_Consultant> listConsultant = getConsultDetails(1);
-            List<cg_Consultant> listConsultant = getConsultDetails();
+            List<cg_Consultant> listConsultant = getConsultDetails(0);
 
 
             List<cg_Technology> listTech = getTechnologyDetails();
@@ -73,6 +73,7 @@ namespace WebApi_New.Models
                         cg_Marketing obj = new cg_Marketing();
                         obj.Id = Convert.ToInt32(MarketingDetails.Rows[i]["Id"]);
                         obj.Consult_Id = Convert.ToInt32(MarketingDetails.Rows[i]["Consult_Id"]);
+                        obj.Recruiter_Id = Convert.ToInt32(MarketingDetails.Rows[i]["Assigned_Sales_Recruiter"]);
                         //obj.Consult_Name = Convert.ToString(MarketingDetails.Rows[i]["Consult_Name"]);
                         obj.Assigned_Sales_Recruiter = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(MarketingDetails.Rows[i]["Assigned_Sales_Recruiter"])).FirstOrDefault().Emp_FullName.ToString();
                         obj.Is_Open_To_All = Convert.ToString(MarketingDetails.Rows[i]["Is_Open_To_All"]);
@@ -125,11 +126,14 @@ namespace WebApi_New.Models
         }
 
         //public List<cg_Consultant> getConsultDetails( int Allorany)
-        public List<cg_Consultant> getConsultDetails()
+        public List<cg_Consultant> getConsultDetails(int ConsultantStatusId)
 
         {
             DataTable dtConsult = new DataTable();
             List<cg_Consultant> listConsult = new List<cg_Consultant>();
+            List<cg_Technology> listtech = getTechnologyDetails();
+            List<cg_MarketingStatus> listMarketingStatus = getMarketingstatusmaster();
+
 
             try
             {
@@ -144,7 +148,7 @@ namespace WebApi_New.Models
                     using (SqlCommand dbcommand = new SqlCommand(Query, dbConnection))
                     {
                         dbcommand.CommandType = CommandType.StoredProcedure;
-                        //dbcommand.Parameters.AddWithValue("@ConsultantStatusId", SqlDbType.Int).Value = 1;
+                        dbcommand.Parameters.AddWithValue("@ConsultantStatusId", SqlDbType.Int).Value = ConsultantStatusId;
                         dbAdapater = new SqlDataAdapter(dbcommand);
                         dbAdapater.Fill(dtConsult);
                         dbConnection.Close();
@@ -162,9 +166,9 @@ namespace WebApi_New.Models
                                        Consult_Email = dr["Consult_Email"].ToString(),
                                        Consult_Phone = dr["Consult_Phone"].ToString(),
                                        Consult_Address = dr["Consult_Address"].ToString(),
-                                       Consult_Technology = dr["Consult_Technology"].ToString(),
+                                       Consult_Technology = listtech.Where(p=>p.Id==Convert.ToInt32(dr["Consult_Technology"])).FirstOrDefault().Technology_Name ,//dr["Consult_Technology"].ToString(),
                                        Consult_VisaStatus = dr["Consult_VisaStatus"].ToString(),
-                                       Consult_Status = Convert.ToInt32(dr["Consult_Status"]),
+                                       Consult_Status = listMarketingStatus.Where(p=>p.Id==Convert.ToInt32(dr["Consult_Status"])).FirstOrDefault().Status_Name,
                                        Consult_DOB = dr["Consult_DOB"].ToString(),
                                        Consult_Full_Name = dr["Consult_First_Name"].ToString() + " " + dr["Consult_Last_Name"].ToString()
                                    }).ToList();
@@ -228,7 +232,7 @@ namespace WebApi_New.Models
             List<cg_Placement> listPlacement = new List<cg_Placement>();
             List<cg_Employees> listemployee = getEmployeeDetails();
             // List<cg_Consultant> listConsultant = getConsultDetails(-1);
-            List<cg_Consultant> listConsultant = getConsultDetails();
+            List<cg_Consultant> listConsultant = getConsultDetails(0);
 
             try
             {
@@ -317,7 +321,7 @@ namespace WebApi_New.Models
         public List<cg_Technology> getTechnologyDetails()
         {
             DataTable dtTechnology = new DataTable();
-            List<cg_Technology> listConsult = new List<cg_Technology>();
+            List<cg_Technology> listTechnology = new List<cg_Technology>();
 
             try
             {
@@ -326,7 +330,7 @@ namespace WebApi_New.Models
 
                 if (dtTechnology != null && dtTechnology.Rows.Count > 0)
                 {
-                    listConsult = (from DataRow dr in dtTechnology.Rows
+                    listTechnology = (from DataRow dr in dtTechnology.Rows
                                    select new cg_Technology()
                                    {
                                        Id = Convert.ToInt32(dr["Id"]),
@@ -344,7 +348,40 @@ namespace WebApi_New.Models
 
                 return null;
             }
-            return listConsult;
+            return listTechnology;
+        }
+
+        public List<cg_MarketingStatus> getMarketingstatusmaster()
+        {
+            DataTable dtMarketingstatus = new DataTable();
+            List<cg_MarketingStatus> listMarketingstatus  = new List<cg_MarketingStatus>();
+
+            try
+            {
+                dtMarketingstatus = dynamicTableData("[dbo].[Sp_GetMarketingstatusmaster]");
+
+
+                if (dtMarketingstatus != null && dtMarketingstatus.Rows.Count > 0)
+                {
+                    listMarketingstatus = (from DataRow dr in dtMarketingstatus.Rows
+                                      select new cg_MarketingStatus()
+                                      {
+                                          Id = Convert.ToInt32(dr["Id"]),
+                                          Status_Name = dr["Status_Name"].ToString(),
+                                          Status_Description = dr["Status_Description"].ToString(),
+                                          Notes = dr["Notes"].ToString(),
+                                          active = Convert.ToInt32(dr["active"])
+
+                                      }).ToList();
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return null;
+            }
+            return listMarketingstatus;
         }
 
         public List<cg_VisaType> getVisatypeDetails()
@@ -597,13 +634,13 @@ namespace WebApi_New.Models
                         mycommand.Parameters.AddWithValue("@Consult_id", em.Consult_id);
                         mycommand.Parameters.AddWithValue("@Placed_Sales_Recruiter", em.Placed_Sales_Recruiter);
                         mycommand.Parameters.AddWithValue("@Placed_Tech", em.Placed_Tech);
-                        mycommand.Parameters.AddWithValue("@PO_Date", Convert.ToDateTime(em.PO_Date).ToString("MM/dd/yyyy"));
+                        mycommand.Parameters.AddWithValue("@PO_Date", DateTime.ParseExact(em.PO_Date, "MM/dd/yyyy", CultureInfo.InvariantCulture)); 
 
                         mycommand.Parameters.AddWithValue("@Visa_Type", em.Visa_Type);
-                        mycommand.Parameters.AddWithValue("@Project_Start_Date", Convert.ToDateTime(em.Project_Start_Date).ToString("MM/dd/yyyy"));
+                        mycommand.Parameters.AddWithValue("@Project_Start_Date", DateTime.ParseExact(em.Project_Start_Date, "MM/dd/yyyy", CultureInfo.InvariantCulture));
                         mycommand.Parameters.AddWithValue("@Project_Duration", em.Project_Duration + " months");
 
-                        mycommand.Parameters.AddWithValue("@Project_End_Date", Convert.ToDateTime(em.Project_End_Date).ToString("MM/dd/yyyy"));
+                        mycommand.Parameters.AddWithValue("@Project_End_Date", DateTime.ParseExact(em.Project_End_Date, "MM/dd/yyyy", CultureInfo.InvariantCulture));
                         mycommand.Parameters.AddWithValue("@Vendor_Name", em.Vendor_Name);
                         mycommand.Parameters.AddWithValue("@Vendor_SPOC_Name", em.Vendor_SPOC_Name);
 
@@ -615,7 +652,7 @@ namespace WebApi_New.Models
                         mycommand.Parameters.AddWithValue("@Client_Name", em.Client_Name);
                         mycommand.Parameters.AddWithValue("@Client_SPOC_Name", em.Client_SPOC_Name);
                         mycommand.Parameters.AddWithValue("@Client_SPOC_Email", em.Client_SPOC_Email);
-
+                      
 
                         mycommand.Parameters.AddWithValue("@Client_SPOC_PhoneNumber", em.Client_SPOC_PhoneNumber);
                         mycommand.Parameters.AddWithValue("@Client_Address", em.Client_Address);
@@ -638,6 +675,7 @@ namespace WebApi_New.Models
                         if (myReader.RecordsAffected > 0)
                         {
                             AddIncentivedetailsFromplacement(em);
+                            updateConsultantStatus(em.Consult_id, 3);
                             result = true;
                         }
                         myReader.Close();
@@ -658,7 +696,7 @@ namespace WebApi_New.Models
             DataTable SubmissionDetails = new DataTable();
             List<cg_Submissions> listSubmissions = new List<cg_Submissions>();
             List<cg_Employees> listemployee = getEmployeeDetails();
-            List<cg_Consultant> listConsultant = getConsultDetails();
+            List<cg_Consultant> listConsultant = getConsultDetails(0);
 
             List<cg_Technology> listTech = getTechnologyDetails();
             try
@@ -671,38 +709,38 @@ namespace WebApi_New.Models
                     for (int i = 0; i < SubmissionDetails.Rows.Count; i++)
                     {
                         cg_Submissions obj = new cg_Submissions();
-                        obj.Id = Convert.ToInt32(SubmissionDetails.Rows[i]["Id"]);
-                        obj.Consult_id = Convert.ToInt32(SubmissionDetails.Rows[i]["Consult_id"]);
-                        obj.Recruiter_id = Convert.ToInt32(SubmissionDetails.Rows[i]["Recruiter_id"]);
-                        obj.NoOfSubmissions = Convert.ToInt32(SubmissionDetails.Rows[i]["NumberOfSubmissions"]);
+                        obj.Id = SubmissionDetails.Rows[i]["Id"] is DBNull ? 0 : Convert.ToInt32(SubmissionDetails.Rows[i]["Id"]);
+                        obj.Consult_id = SubmissionDetails.Rows[i]["Consult_id"] is DBNull ? 0 : Convert.ToInt32(SubmissionDetails.Rows[i]["Consult_id"]);
+                        obj.Recruiter_id = SubmissionDetails.Rows[i]["Recruiter_id"] is DBNull ? 0 : Convert.ToInt32(SubmissionDetails.Rows[i]["Recruiter_id"]);
+                        obj.NoOfSubmissions = SubmissionDetails.Rows[i]["NumberOfSubmissions"] is DBNull ? 0 : Convert.ToInt32(SubmissionDetails.Rows[i]["NumberOfSubmissions"]);
 
-                        obj.Consult_Name = listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(SubmissionDetails.Rows[i]["Consult_id"])).FirstOrDefault().Consult_Full_Name;//Convert.ToString(MarketingDetails.Rows[i]["Consult_Name"]);
-                        obj.Recruiter_Name = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(SubmissionDetails.Rows[i]["Recruiter_id"])).FirstOrDefault().Emp_FullName.ToString();
+                        obj.Consult_Name = SubmissionDetails.Rows[i]["Consult_id"] is DBNull ? "" : listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(SubmissionDetails.Rows[i]["Consult_id"])).FirstOrDefault().Consult_Full_Name;//Convert.ToString(MarketingDetails.Rows[i]["Consult_Name"]);
+                        obj.Recruiter_Name = SubmissionDetails.Rows[i]["Recruiter_id"] is DBNull ? "" : listemployee.Where(p => p.Emp_Id == Convert.ToInt32(SubmissionDetails.Rows[i]["Recruiter_id"])).FirstOrDefault().Emp_FullName.ToString();
 
-                        obj.Marketing_Tech = listTech.Where(p => p.Id == Convert.ToInt32(SubmissionDetails.Rows[i]["Marketing_Tech"])).FirstOrDefault().Technology_Name;
-                        obj.Vendor_Name = Convert.ToString(SubmissionDetails.Rows[i]["Vendor_Name"]);
-                        obj.Vendor_POC_Name = Convert.ToString(SubmissionDetails.Rows[i]["Vendor_POC_Name"]);
-                        obj.Vendor_POC_Email = Convert.ToString(SubmissionDetails.Rows[i]["Vendor_POC_Email"]);
-                        obj.Vendor_POC_PhoneNumber = Convert.ToString(SubmissionDetails.Rows[i]["Vendor_POC_PhoneNumber"]);
-                        obj.Vendor_Address = Convert.ToString(SubmissionDetails.Rows[i]["Vendor_Address"]);
-                        obj.End_Client_Name = Convert.ToString(SubmissionDetails.Rows[i]["End_Client_Name"]);
-                        obj.End_Client_POC_Name = Convert.ToString(SubmissionDetails.Rows[i]["End_Client_POC_Name"]);
-                        obj.End_Client_POC_Email = Convert.ToString(SubmissionDetails.Rows[i]["End_Client_POC_Email"]);
-                        obj.End_Client_POC_PhoneNumber = Convert.ToString(SubmissionDetails.Rows[i]["End_Client_POC_PhoneNumber"]);
-                        obj.End_Client_Address = Convert.ToString(SubmissionDetails.Rows[i]["End_Client_Address"]);
-                        obj.Rate_confirmation = Convert.ToString(SubmissionDetails.Rows[i]["Rate_confirmation"]);
-                        obj.Bill_Rate = Convert.ToString(SubmissionDetails.Rows[i]["Bill_Rate"]);
-                        obj.Assignment_date = Convert.ToDateTime(SubmissionDetails.Rows[i]["Assignment_date"]).ToShortDateString();
-                        obj.Assignment_done_by = Convert.ToString(SubmissionDetails.Rows[i]["Assignment_done_by"]);
-                        obj.Assignment_status = Convert.ToString(SubmissionDetails.Rows[i]["Assignment_status"]);
-                        obj.Interview_Schedudule_Date = Convert.ToDateTime(SubmissionDetails.Rows[i]["Interview_Schedudule_Date"]).ToShortDateString();
-                        obj.Interview_Status = Convert.ToString(SubmissionDetails.Rows[i]["Interview_Status"]);
-                        obj.Created_date = Convert.ToDateTime(SubmissionDetails.Rows[i]["Created_date"]).ToShortDateString();
-                        obj.Created_by = Convert.ToString(SubmissionDetails.Rows[i]["Created_by"]);
-                        obj.Modified_Date = Convert.ToDateTime(SubmissionDetails.Rows[i]["Modified_Date"]).ToShortDateString();
-                        obj.Modified_by = Convert.ToString(SubmissionDetails.Rows[i]["Modified_by"]);
-                        obj.Notes = Convert.ToString(SubmissionDetails.Rows[i]["Notes"]);
-                        obj.submission_status = Convert.ToString(SubmissionDetails.Rows[i]["submission_status"]);
+                        obj.Marketing_Tech = SubmissionDetails.Rows[i]["Marketing_Tech"] is DBNull ? "" : listTech.Where(p => p.Id == Convert.ToInt32(SubmissionDetails.Rows[i]["Marketing_Tech"])).FirstOrDefault().Technology_Name;
+                        obj.Vendor_Name = SubmissionDetails.Rows[i]["Vendor_Name"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["Vendor_Name"]);
+                        obj.Vendor_POC_Name = SubmissionDetails.Rows[i]["Vendor_POC_Name"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["Vendor_POC_Name"]);
+                        obj.Vendor_POC_Email = SubmissionDetails.Rows[i]["Vendor_POC_Email"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["Vendor_POC_Email"]);
+                        obj.Vendor_POC_PhoneNumber = SubmissionDetails.Rows[i]["Vendor_POC_PhoneNumber"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["Vendor_POC_PhoneNumber"]);
+                        obj.Vendor_Address = SubmissionDetails.Rows[i]["Vendor_Address"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["Vendor_Address"]);
+                        obj.End_Client_Name = SubmissionDetails.Rows[i]["End_Client_Name"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["End_Client_Name"]);
+                        obj.End_Client_POC_Name = SubmissionDetails.Rows[i]["End_Client_POC_Name"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["End_Client_POC_Name"]);
+                        obj.End_Client_POC_Email = SubmissionDetails.Rows[i]["End_Client_POC_Email"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["End_Client_POC_Email"]);
+                        obj.End_Client_POC_PhoneNumber = SubmissionDetails.Rows[i]["End_Client_POC_PhoneNumber"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["End_Client_POC_PhoneNumber"]);
+                        obj.End_Client_Address = SubmissionDetails.Rows[i]["End_Client_Address"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["End_Client_Address"]);
+                        obj.Rate_confirmation = SubmissionDetails.Rows[i]["Rate_confirmation"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["Rate_confirmation"]);
+                        obj.Bill_Rate = SubmissionDetails.Rows[i]["Bill_Rate"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["Bill_Rate"]);
+                        obj.Assignment_date = SubmissionDetails.Rows[i]["Assignment_date"] is DBNull ? "" : Convert.ToDateTime(SubmissionDetails.Rows[i]["Assignment_date"]).ToShortDateString();
+                        obj.Assignment_done_by = SubmissionDetails.Rows[i]["Assignment_done_by"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["Assignment_done_by"]);
+                        obj.Assignment_status = SubmissionDetails.Rows[i]["Assignment_status"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["Assignment_status"]);
+                        obj.Interview_Schedudule_Date = SubmissionDetails.Rows[i]["Interview_Schedudule_Date"] is DBNull ? "" : Convert.ToDateTime(SubmissionDetails.Rows[i]["Interview_Schedudule_Date"]).ToShortDateString();
+                        obj.Interview_Status = SubmissionDetails.Rows[i]["Interview_Status"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["Interview_Status"]);
+                        obj.Created_date = SubmissionDetails.Rows[i]["Created_date"] is DBNull ? "" : Convert.ToDateTime(SubmissionDetails.Rows[i]["Created_date"]).ToShortDateString();
+                        obj.Created_by = SubmissionDetails.Rows[i]["Created_by"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["Created_by"]);
+                        obj.Modified_Date = SubmissionDetails.Rows[i]["Modified_Date"] is DBNull ? "" : Convert.ToDateTime(SubmissionDetails.Rows[i]["Modified_Date"]).ToShortDateString();
+                        obj.Modified_by = SubmissionDetails.Rows[i]["Modified_by"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["Modified_by"]);
+                        obj.Notes = SubmissionDetails.Rows[i]["Notes"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["Notes"]);
+                        obj.submission_status = SubmissionDetails.Rows[i]["submission_status"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["submission_status"]);
 
 
                         listSubmissions.Add(obj);
@@ -750,7 +788,7 @@ namespace WebApi_New.Models
             DataTable SubmissionDetails = new DataTable();
             List<cg_Submissions> listSubmissions = new List<cg_Submissions>();
             List<cg_Employees> listemployee = getEmployeeDetails();
-            List<cg_Consultant> listConsultant = getConsultDetails();
+            List<cg_Consultant> listConsultant = getConsultDetails(0);
 
             List<cg_Technology> listTech = getTechnologyDetails();
             try
@@ -763,45 +801,39 @@ namespace WebApi_New.Models
                     for (int i = 0; i < SubmissionDetails.Rows.Count; i++)
                     {
                         cg_Submissions obj = new cg_Submissions();
-                        obj.Id = Convert.ToInt32(SubmissionDetails.Rows[i]["Id"]);
-                        obj.Consult_id = Convert.ToInt32(SubmissionDetails.Rows[i]["Consult_id"]);
-                        obj.Recruiter_id = Convert.ToInt32(SubmissionDetails.Rows[i]["Recruiter_id"]);
-                        //obj.NoOfSubmissions=Convert.ToInt32(SubmissionDetails.Rows[i]["NumberOfSubmissions"]);
+                        obj.Id = SubmissionDetails.Rows[i]["Id"] is DBNull ? 0 : Convert.ToInt32(SubmissionDetails.Rows[i]["Id"]);
+                        obj.Consult_id = SubmissionDetails.Rows[i]["Consult_id"] is DBNull ? 0 : Convert.ToInt32(SubmissionDetails.Rows[i]["Consult_id"]);
+                        obj.Recruiter_id = SubmissionDetails.Rows[i]["Recruiter_id"] is DBNull ? 0 : Convert.ToInt32(SubmissionDetails.Rows[i]["Recruiter_id"]);
+                        //obj.NoOfSubmissions = SubmissionDetails.Rows[i]["NumberOfSubmissions"] is DBNull ? 0 : Convert.ToInt32(SubmissionDetails.Rows[i]["NumberOfSubmissions"]);
 
-                        obj.Consult_Name = listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(SubmissionDetails.Rows[i]["Consult_id"])).FirstOrDefault().Consult_Full_Name;//Convert.ToString(MarketingDetails.Rows[i]["Consult_Name"]);
-                        obj.Recruiter_Name = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(SubmissionDetails.Rows[i]["Recruiter_id"])).FirstOrDefault().Emp_FullName.ToString();
+                        obj.Consult_Name = SubmissionDetails.Rows[i]["Consult_id"] is DBNull ? "" : listConsultant.Where(p => p.Consult_Id == Convert.ToInt32(SubmissionDetails.Rows[i]["Consult_id"])).FirstOrDefault().Consult_Full_Name;//Convert.ToString(MarketingDetails.Rows[i]["Consult_Name"]);
+                        obj.Recruiter_Name = SubmissionDetails.Rows[i]["Recruiter_id"] is DBNull ? "" : listemployee.Where(p => p.Emp_Id == Convert.ToInt32(SubmissionDetails.Rows[i]["Recruiter_id"])).FirstOrDefault().Emp_FullName.ToString();
 
-                        obj.Marketing_Tech = listTech.Where(p => p.Id == Convert.ToInt32(SubmissionDetails.Rows[i]["Marketing_Tech"])).FirstOrDefault().Technology_Name;
-                        obj.Vendor_Name = Convert.ToString(SubmissionDetails.Rows[i]["Vendor_Name"]);
-                        obj.Vendor_POC_Name = Convert.ToString(SubmissionDetails.Rows[i]["Vendor_POC_Name"]);
-                        obj.Vendor_POC_Email = Convert.ToString(SubmissionDetails.Rows[i]["Vendor_POC_Email"]);
-                        obj.Vendor_POC_PhoneNumber = Convert.ToString(SubmissionDetails.Rows[i]["Vendor_POC_PhoneNumber"]);
-                        obj.Vendor_Address = Convert.ToString(SubmissionDetails.Rows[i]["Vendor_Address"]);
-                        obj.End_Client_Name = Convert.ToString(SubmissionDetails.Rows[i]["End_Client_Name"]);
-                        obj.End_Client_POC_Name = Convert.ToString(SubmissionDetails.Rows[i]["End_Client_POC_Name"]);
-                        obj.End_Client_POC_Email = Convert.ToString(SubmissionDetails.Rows[i]["End_Client_POC_Email"]);
-                        obj.End_Client_POC_PhoneNumber = Convert.ToString(SubmissionDetails.Rows[i]["End_Client_POC_PhoneNumber"]);
-                        obj.End_Client_Address = Convert.ToString(SubmissionDetails.Rows[i]["End_Client_Address"]);
-                        obj.Rate_confirmation = Convert.ToString(SubmissionDetails.Rows[i]["Rate_confirmation"]);
-                        obj.Bill_Rate = Convert.ToString(SubmissionDetails.Rows[i]["Bill_Rate"]);
-                        obj.Assignment_date = Convert.ToDateTime(SubmissionDetails.Rows[i]["Assignment_date"]).ToString("MM/dd/yyyy");
-                        obj.Assignment_done_by = Convert.ToString(SubmissionDetails.Rows[i]["Assignment_done_by"]);
+                        obj.Marketing_Tech = SubmissionDetails.Rows[i]["Marketing_Tech"] is DBNull ? "" : listTech.Where(p => p.Id == Convert.ToInt32(SubmissionDetails.Rows[i]["Marketing_Tech"])).FirstOrDefault().Technology_Name;
+                        obj.Vendor_Name = SubmissionDetails.Rows[i]["Vendor_Name"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["Vendor_Name"]);
+                        obj.Vendor_POC_Name = SubmissionDetails.Rows[i]["Vendor_POC_Name"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["Vendor_POC_Name"]);
+                        obj.Vendor_POC_Email = SubmissionDetails.Rows[i]["Vendor_POC_Email"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["Vendor_POC_Email"]);
+                        obj.Vendor_POC_PhoneNumber = SubmissionDetails.Rows[i]["Vendor_POC_PhoneNumber"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["Vendor_POC_PhoneNumber"]);
+                        obj.Vendor_Address = SubmissionDetails.Rows[i]["Vendor_Address"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["Vendor_Address"]);
+                        obj.End_Client_Name = SubmissionDetails.Rows[i]["End_Client_Name"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["End_Client_Name"]);
+                        obj.End_Client_POC_Name = SubmissionDetails.Rows[i]["End_Client_POC_Name"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["End_Client_POC_Name"]);
+                        obj.End_Client_POC_Email = SubmissionDetails.Rows[i]["End_Client_POC_Email"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["End_Client_POC_Email"]);
+                        obj.End_Client_POC_PhoneNumber = SubmissionDetails.Rows[i]["End_Client_POC_PhoneNumber"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["End_Client_POC_PhoneNumber"]);
+                        obj.End_Client_Address = SubmissionDetails.Rows[i]["End_Client_Address"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["End_Client_Address"]);
+                        obj.Rate_confirmation = SubmissionDetails.Rows[i]["Rate_confirmation"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["Rate_confirmation"]);
+                        obj.Bill_Rate = SubmissionDetails.Rows[i]["Bill_Rate"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["Bill_Rate"]);
+                        obj.Assignment_date = SubmissionDetails.Rows[i]["Assignment_date"] is DBNull ? "" : Convert.ToDateTime(SubmissionDetails.Rows[i]["Assignment_date"]).ToShortDateString();
+                        obj.Assignment_done_by = SubmissionDetails.Rows[i]["Assignment_done_by"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["Assignment_done_by"]);
+                        obj.Assignment_status = SubmissionDetails.Rows[i]["Assignment_status"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["Assignment_status"]);
+                        obj.Interview_Schedudule_Date = SubmissionDetails.Rows[i]["Interview_Schedudule_Date"] is DBNull ? "" : Convert.ToDateTime(SubmissionDetails.Rows[i]["Interview_Schedudule_Date"]).ToShortDateString();
+                        obj.Interview_Status = SubmissionDetails.Rows[i]["Interview_Status"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["Interview_Status"]);
+                        obj.Created_date = SubmissionDetails.Rows[i]["Created_date"] is DBNull ? "" : Convert.ToDateTime(SubmissionDetails.Rows[i]["Created_date"]).ToShortDateString();
+                        obj.Created_by = SubmissionDetails.Rows[i]["Created_by"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["Created_by"]);
+                        obj.Modified_Date = SubmissionDetails.Rows[i]["Modified_Date"] is DBNull ? "" : Convert.ToDateTime(SubmissionDetails.Rows[i]["Modified_Date"]).ToShortDateString();
+                        obj.Modified_by = SubmissionDetails.Rows[i]["Modified_by"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["Modified_by"]);
+                        obj.Notes = SubmissionDetails.Rows[i]["Notes"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["Notes"]);
+                        obj.submission_status = SubmissionDetails.Rows[i]["submission_status"] is DBNull ? "" : Convert.ToString(SubmissionDetails.Rows[i]["submission_status"]);
 
-                        obj.Assignment_status = Convert.ToString(SubmissionDetails.Rows[i]["Assignment_status"]);
-
-                        obj.Interview_Schedudule_Date = Convert.ToDateTime(SubmissionDetails.Rows[i]["Interview_Schedudule_Date"]).ToString("MM/dd/yyyy"); ;
-                        obj.Interview_Status = Convert.ToString(SubmissionDetails.Rows[i]["Interview_Status"]);
-
-                        obj.Created_date = Convert.ToDateTime(SubmissionDetails.Rows[i]["Created_date"]).ToString("MM/dd/yyyy");
-
-                        obj.Created_by = Convert.ToString(SubmissionDetails.Rows[i]["Created_by"]);
-
-                        obj.Modified_Date = Convert.ToDateTime(SubmissionDetails.Rows[i]["Modified_Date"]).ToString("MM/dd/yyyy");
-
-                        obj.Modified_by = Convert.ToString(SubmissionDetails.Rows[i]["Modified_by"]);
-
-                        obj.Notes = Convert.ToString(SubmissionDetails.Rows[i]["Notes"]);
-                        obj.submission_status = Convert.ToString(SubmissionDetails.Rows[i]["submission_status"]);
 
 
                         listSubmissions.Add(obj);
@@ -853,7 +885,7 @@ namespace WebApi_New.Models
             try
             {
                 String query = "INSERT INTO [CG].[Consult_Marketing_Submission] (Consult_id,Recruiter_id,Marketing_Tech,Vendor_Name,Vendor_POC_Name,Vendor_POC_Email,Vendor_POC_PhoneNumber,Vendor_Address," +
-                    "Vendor_Name,Vendor_SPOC_Name,Vendor_SPOC_Email,Vendor_SPOC_PhoneNumber,Vendor_Address,Client_Name," +
+
                     "End_Client_Name,End_Client_POC_Name,End_Client_POC_Email,End_Client_POC_PhoneNumber,End_Client_Address,Rate_confirmation,Bill_Rate,Assignment_date,Assignment_status,Assignment_done_by," +
                     "Interview_Schedudule_Date,Interview_Status,submission_status,Created_by,Modified_by,Notes)" +
                     " VALUES " +
@@ -862,6 +894,7 @@ namespace WebApi_New.Models
                     "@Modified_by,@Notes)";
 
                 DataTable table = new DataTable();
+                em.Created_date = DateTime.Now.ToShortDateString();
                 string SQlDatasource = _configuration.GetConnectionString("CodeGravityDB");
                 SqlDataReader myReader;
                 using (SqlConnection mycon = new SqlConnection(SQlDatasource))
@@ -886,26 +919,28 @@ namespace WebApi_New.Models
                         mycommand.Parameters.AddWithValue("@End_Client_POC_PhoneNumber", em.End_Client_POC_PhoneNumber);
 
 
-                        mycommand.Parameters.AddWithValue("@End_Client_POC_PhoneNumber", em.End_Client_POC_PhoneNumber);
+
                         mycommand.Parameters.AddWithValue("@End_Client_Address", em.End_Client_Address);
                         mycommand.Parameters.AddWithValue("@Rate_confirmation", em.Rate_confirmation);
 
 
                         mycommand.Parameters.AddWithValue("@Bill_Rate", "$" + em.Bill_Rate);
-                        mycommand.Parameters.AddWithValue("@Assignment_date", Convert.ToDateTime(em.Assignment_date).ToString("MM/dd/yyyy"));
+                        mycommand.Parameters.AddWithValue("@Assignment_date", DateTime.ParseExact(em.Assignment_date, "MM/dd/yyyy", CultureInfo.InvariantCulture));
                         mycommand.Parameters.AddWithValue("@Assignment_status", em.Assignment_status);
                         mycommand.Parameters.AddWithValue("@Assignment_done_by", em.Assignment_done_by);
 
-                        mycommand.Parameters.AddWithValue("@Interview_Schedudule_Date", Convert.ToDateTime(em.Interview_Schedudule_Date).ToString("MM/dd/yyyy"));
+                        ;
+
+                        mycommand.Parameters.AddWithValue("@Interview_Schedudule_Date", DateTime.ParseExact(em.Interview_Schedudule_Date, "MM/dd/yyyy", CultureInfo.InvariantCulture));
 
                         mycommand.Parameters.AddWithValue("@Interview_Status", em.Interview_Status);
                         mycommand.Parameters.AddWithValue("@submission_status", em.submission_status);
 
-                        mycommand.Parameters.AddWithValue("@Created_Date", DateTime.Now.ToString("MM/dd/yyyy"));
-                        mycommand.Parameters.AddWithValue("@Created_by", em.Created_by);
+                        mycommand.Parameters.AddWithValue("@Created_Date", em.Created_date);
+                        mycommand.Parameters.AddWithValue("@Created_by", em.Recruiter_id);
 
-                        mycommand.Parameters.AddWithValue("@Modified_Date", DateTime.Now.ToString("MM/dd/yyyy"));
-                        mycommand.Parameters.AddWithValue("@Modified_by", em.Modified_by);
+                        mycommand.Parameters.AddWithValue("@Modified_Date", DateTime.Now.ToString());
+                        mycommand.Parameters.AddWithValue("@Modified_by", em.Recruiter_id);
                         mycommand.Parameters.AddWithValue("@Notes", em.Notes);
 
                         mycon.Open();
@@ -956,7 +991,7 @@ namespace WebApi_New.Models
                     {
                         mycommand.Parameters.AddWithValue("@Consult_id", em.Consultant_Id);
                         mycommand.Parameters.AddWithValue("@Recruiter_Id", em.Recruiter_Id);
-                        mycommand.Parameters.AddWithValue("@Project_Start_Date", em.Project_Start_Date);                        
+                        mycommand.Parameters.AddWithValue("@Project_Start_Date", em.Project_Start_Date);
                         mycommand.Parameters.AddWithValue("@IncentiveType", em.IncentiveType);
 
                         mycommand.Parameters.AddWithValue("@Term1_IncentivePeriod", em.Term1_IncentivePeriod);
@@ -1021,7 +1056,7 @@ namespace WebApi_New.Models
             bool result = false;
             List<cg_Employees> listemp = getEmployeeDetails();
             int employeIncentivetype = listemp.Where(p => p.Emp_Id == Convert.ToInt32(placement.Placed_Sales_Recruiter)).FirstOrDefault().Emp_IncentiveType;
-            cg_Incentivedetils CalculatedIncentives=calculateIncetives(placement.Project_Start_Date, employeIncentivetype);
+            cg_Incentivedetils CalculatedIncentives = calculateIncetives(placement.Project_Start_Date, employeIncentivetype);
 
             cg_Incentivedetils em = new cg_Incentivedetils();
             try
@@ -1032,7 +1067,7 @@ namespace WebApi_New.Models
                     " VALUES " +
                     "(@Consultant_Id,@Recruiter_Id,@Project_Start_Date,@IncentiveType,@Term1_IncentivePeriod,@Term1_IncentivepayableDate,@Term1_IncentiveAmount,@Is_Term1_IncentivePaid,@Term2_IncentivePeriod,@Term2_IncentivePayableDate,@Term2_IncentiveAmount,@Is_Term2_IncentivePaid," +
                     "@Term3_IncentivePeriod,@Term3_IncentivePayableDate,@Term3_IncentiveAmount,@Is_Term3_IncentivePaid,@Term4_IncentivePeriod,@Term4_IncentivePayableDate," +
-                    "@Term4_IncentiveAmount,@Is_Term4_IncentivePaid,@Comments,@Notes1,@Notes2,@Placement_Status,@Created_Date,@Created_by,@Modified_Date,@Modified_by,@Incentive_Status" +
+                    "@Term4_IncentiveAmount,@Is_Term4_IncentivePaid,@Comments,@Notes1,@Notes2,@Created_Date,@Created_by,@Modified_Date,@Modified_by,@Incentive_Status" +
                     ")";
 
                 DataTable table = new DataTable();
@@ -1044,12 +1079,12 @@ namespace WebApi_New.Models
                     {
                         mycommand.Parameters.AddWithValue("@Consultant_Id", placement.Consult_id);
                         mycommand.Parameters.AddWithValue("@Recruiter_Id", placement.Placed_Sales_Recruiter);
-                        mycommand.Parameters.AddWithValue("@Project_Start_Date", placement.Project_Start_Date);                        
+                        mycommand.Parameters.AddWithValue("@Project_Start_Date", placement.Project_Start_Date);
                         mycommand.Parameters.AddWithValue("@IncentiveType", employeIncentivetype);
 
 
                         mycommand.Parameters.AddWithValue("@Term1_IncentivePeriod", CalculatedIncentives.Term1_IncentivePeriod);
-                        mycommand.Parameters.AddWithValue("@Term1_IncentivepayableDate", Convert.ToDateTime(CalculatedIncentives.Term1_IncentivepayableDate).ToString("MM/dd/yyyy")); 
+                        mycommand.Parameters.AddWithValue("@Term1_IncentivepayableDate", Convert.ToDateTime(CalculatedIncentives.Term1_IncentivepayableDate).ToString("MM/dd/yyyy"));
                         mycommand.Parameters.AddWithValue("@Term1_IncentiveAmount", Convert.ToDecimal(CalculatedIncentives.Term1_IncentiveAmount));
                         mycommand.Parameters.AddWithValue("@Is_Term1_IncentivePaid", CalculatedIncentives.Is_Term1_IncentivePaid);
 
@@ -1072,9 +1107,9 @@ namespace WebApi_New.Models
                         mycommand.Parameters.AddWithValue("@Is_Term4_IncentivePaid", CalculatedIncentives.Is_Term4_IncentivePaid);
 
 
-                        mycommand.Parameters.AddWithValue("@Comments", "");
+                        mycommand.Parameters.AddWithValue("@Comments", "''");
                         mycommand.Parameters.AddWithValue("@Notes1", placement.Notes);
-                        mycommand.Parameters.AddWithValue("@Notes2", "");
+                        mycommand.Parameters.AddWithValue("@Notes2", "''");
                         mycommand.Parameters.AddWithValue("@Created_Date", DateTime.Now.ToString("MM/dd/yyyy"));
                         mycommand.Parameters.AddWithValue("@Created_by", em.Created_by);
 
@@ -1104,7 +1139,7 @@ namespace WebApi_New.Models
             return result;
         }
 
-        public cg_Incentivedetils calculateIncetives(string Project_Start_Date,int Incentivetype)
+        public cg_Incentivedetils calculateIncetives(string Project_Start_Date, int Incentivetype)
         {
             cg_Incentivedetils objIncentives = new cg_Incentivedetils();
             List<cg_Incentives> incentiveTypeList = getIncentivetypeDetails();
@@ -1119,7 +1154,7 @@ namespace WebApi_New.Models
                 DateTime Term1_Incentivemonth = term1.AddMonths(1).Date;
                 string Term1_IncentivepayableDate = new DateTime(Term1_Incentivemonth.Year, Term1_Incentivemonth.Month, 1).ToString("MM/dd/yyyy");
 
-                objIncentives.Term1_IncentiveAmount = incentiveTypeList.Where(p=>p.Incentive_Id==Incentivetype).FirstOrDefault().Incentive_Amount;
+                objIncentives.Term1_IncentiveAmount = incentiveTypeList.Where(p => p.Incentive_Id == Incentivetype).FirstOrDefault().Incentive_Amount;
                 objIncentives.Term1_IncentivepayableDate = Term1_IncentivepayableDate;
                 objIncentives.Term1_IncentivePeriod = Term1_IncentivePeriod;
                 objIncentives.Is_Term1_IncentivePaid = 0;
@@ -1129,7 +1164,7 @@ namespace WebApi_New.Models
                 string Term2_IncentivePeriod = String.Format("{0: d MMMM  yyyy}", term1) + "--" + String.Format("{0: d MMMM  yyyy}", term2);
                 DateTime Term2_Incentivemonth = term2.AddMonths(1).Date;
                 string Term2_IncentivepayableDate = new DateTime(Term2_Incentivemonth.Year, Term2_Incentivemonth.Month, 1).ToString("MM/dd/yyyy");
-                
+
                 objIncentives.Term2_IncentiveAmount = incentiveTypeList.Where(p => p.Incentive_Id == Incentivetype).FirstOrDefault().Incentive_Amount;
                 objIncentives.Term2_IncentivePayableDate = Term2_IncentivepayableDate;
                 objIncentives.Term2_IncentivePeriod = Term2_IncentivePeriod;
@@ -1177,8 +1212,8 @@ namespace WebApi_New.Models
 
             List<cg_Incentivedetils> listIncentivesdetails = new List<cg_Incentivedetils>();
             List<cg_Employees> listemp = getEmployeeDetails();
-            List<cg_Consultant> listconsultant = getConsultDetails();
-           
+            List<cg_Consultant> listconsultant = getConsultDetails(0);
+
 
             try
             {
@@ -1195,7 +1230,7 @@ namespace WebApi_New.Models
                                                  Consultant_Id = dr["Consultant_Id"] is DBNull ? 0 : Convert.ToInt32(dr["Consultant_Id"]),
                                                  Consultant_Name = listconsultant.Where(p => p.Consult_Id == Convert.ToInt32(dr["Consultant_Id"])).FirstOrDefault().Consult_Full_Name,
                                                  Recruiter_Id = dr["Recruiter_Id"] is DBNull ? 0 : Convert.ToInt32(dr["Recruiter_Id"]),
-                                                 Recruiter_Name= listemp.Where(p=>p.Emp_Id== Convert.ToInt32(dr["Recruiter_Id"])).FirstOrDefault().Emp_FullName,
+                                                 Recruiter_Name = listemp.Where(p => p.Emp_Id == Convert.ToInt32(dr["Recruiter_Id"])).FirstOrDefault().Emp_FullName,
                                                  IncentiveType = dr["IncentiveType"] is DBNull ? "" : Convert.ToString(dr["IncentiveType"]),
                                                  Project_Start_Date = dr["Project_Start_Date"] is DBNull ? "" : Convert.ToDateTime(dr["Project_Start_Date"]).ToString("MM/dd/yyyy"),
 

@@ -23,20 +23,13 @@ namespace WebApi_New.Controllers
             ObjCM = new ConsultantMaster(_configuration);
            
         }
-        //[HttpGet("{Consult_Status}")]
-        //public JsonResult Get(int Consult_Status)
-        //{
-        //    // DataTable result = ObjCM.GetConsultDetails();
-
-        //    return new JsonResult(ObjCM.GetConsultDetails(Consult_Status));
-        //}
-
-        [HttpGet()]
-        public JsonResult Get()
+        
+        [HttpGet("{statId}")]        
+        public JsonResult Get(int statId)
         {
             // DataTable result = ObjCM.GetConsultDetails();
 
-            return new JsonResult(ObjCM.GetConsultDetails());
+            return new JsonResult(ObjCM.GetConsultDetails(statId));
         }
         [HttpPost]
         public JsonResult post(cg_Consultant cm)
