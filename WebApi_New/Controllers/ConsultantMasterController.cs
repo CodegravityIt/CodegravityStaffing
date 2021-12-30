@@ -24,12 +24,12 @@ namespace WebApi_New.Controllers
            
         }
         
-        [HttpGet("{statId}")]        
-        public JsonResult Get(int statId)
+        [HttpGet("{statusId}")]        
+        public JsonResult Get(int statusId)
         {
             // DataTable result = ObjCM.GetConsultDetails();
 
-            return new JsonResult(ObjCM.GetConsultDetails(statId));
+            return new JsonResult(ObjCM.GetConsultDetails(statusId));
         }
         [HttpPost]
         public JsonResult post(cg_Consultant cm)
