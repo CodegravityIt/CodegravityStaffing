@@ -45,6 +45,21 @@ namespace WebApi_New.Models
             return listIncentiveDetails;
             }
 
+        public bool AddNewIncentivedetails(cg_Incentivedetils ObjIncentive)
+        {
+            bool Isrecordadded = false;
+
+            try
+            {
+                Isrecordadded = objGG_Dal.AddIncentivedetailsFromApi(ObjIncentive);
+            }
+            catch (Exception ex)
+            {
+                Isrecordadded = false;
+            }
+            return Isrecordadded;
+
+        }
 
     }
 }

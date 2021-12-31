@@ -66,7 +66,6 @@ namespace WebApi_New.Models
                 if (MarketingDetails != null && MarketingDetails.Rows.Count > 0)
                 {
 
-                    string strname = listemployee.Where(p => p.Emp_Id == Convert.ToInt32(MarketingDetails.Rows[1]["Consult_id"])).FirstOrDefault().Emp_FirstName.ToString();
 
                     for (int i = 0; i < MarketingDetails.Rows.Count; i++)
                     {
@@ -606,6 +605,70 @@ namespace WebApi_New.Models
                 //throw;
             }
         }
+        public void updateMarketingStatus(int Consultant_id, int Status_id)
+        {
+            try
+            {
+                String query = @"update [CG].[Consultant_Marketing] set [Marketing_Status]=" + Status_id + "where [Consult_Id]=" + Consultant_id + ";";
+                DataTable table = new DataTable();
+                string SQlDatasource = _configuration.GetConnectionString("CodeGravityDB");
+                SqlDataReader myReader;
+                bool result = false;
+                using (SqlConnection mycon = new SqlConnection(SQlDatasource))
+                {
+                    using (SqlCommand mycommand = new SqlCommand(query, mycon))
+                    {
+                        mycommand.Parameters.AddWithValue("@Consultant_id", Consultant_id);
+                        mycommand.Parameters.AddWithValue("@Marketing_Status", Status_id);
+
+                        mycon.Open();
+                        myReader = mycommand.ExecuteReader();
+                        // table.Load(myReader.af);
+                        if (myReader.RecordsAffected > 0)
+                            result = true;
+                        myReader.Close();
+                        mycon.Close();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                //throw;
+            }
+        }
+        public void updateSubmissionStatus(int Consultant_id, int Status_id)
+        {
+            try
+            {
+                String query = @"update [CG].[Consult_Marketing_Submission] set [submission_status]=" + Status_id + "where [Consult_id]=" + Consultant_id + ";";
+                DataTable table = new DataTable();
+                string SQlDatasource = _configuration.GetConnectionString("CodeGravityDB");
+                SqlDataReader myReader;
+                bool result = false;
+                using (SqlConnection mycon = new SqlConnection(SQlDatasource))
+                {
+                    using (SqlCommand mycommand = new SqlCommand(query, mycon))
+                    {
+                        mycommand.Parameters.AddWithValue("@Consultant_id", Consultant_id);
+                        mycommand.Parameters.AddWithValue("@submission_status", Status_id);
+
+                        mycon.Open();
+                        myReader = mycommand.ExecuteReader();
+                        // table.Load(myReader.af);
+                        if (myReader.RecordsAffected > 0)
+                            result = true;
+                        myReader.Close();
+                        mycon.Close();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                //throw;
+            }
+        }
 
         public bool AddNewplacementAssignment(cg_Placement em)
         {
@@ -615,9 +678,16 @@ namespace WebApi_New.Models
 
             try
             {
-                String query = "INSERT INTO [CG].[Consultant_Placement] (Consult_id,Placed_Sales_Recruiter,Placed_Tech,PO_Date,Visa_Type,Project_Start_Date,Project_Duration,Project_End_Date," +
-                    "Vendor_Name,Vendor_SPOC_Name,Vendor_SPOC_Email,Vendor_SPOC_PhoneNumber,Vendor_Address,Client_Name," +
-                    "Client_SPOC_Name,Client_SPOC_Email,Client_SPOC_PhoneNumber,Client_Address,Project_Type,Bill_Rate,Consultant_Pay_Rate,Notes,Placement_Status,Created_Date,Created_by,Modified_Date,Modified_by)" +
+                //String query = "INSERT INTO [CG].[Consultant_Placement] (Consult_id,Placed_Sales_Recruiter,Placed_Tech,PO_Date,Visa_Type,Project_Start_Date,Project_Duration,Project_End_Date," +
+                //    "Vendor_Name,Vendor_SPOC_Name,Vendor_SPOC_Email,Vendor_SPOC_PhoneNumber,Vendor_Address,Client_Name," +
+                //    "Client_SPOC_Name,Client_SPOC_Email,Client_SPOC_PhoneNumber,Client_Address,Project_Type,Bill_Rate,Consultant_Pay_Rate,Notes,Placement_Status,Created_Date,Created_by,Modified_Date,Modified_by)" +
+                //    " VALUES " +
+                //    "(@Consult_id,@Placed_Sales_Recruiter,@Placed_Tech,@PO_Date,@Visa_Type,@Project_Start_Date,@Project_Duration,@Project_End_Date,@Vendor_Name,@Vendor_SPOC_Name,@Vendor_SPOC_Email," +
+                //    "@Vendor_SPOC_PhoneNumber,@Vendor_Address,@Client_Name,@Client_SPOC_Name,@Client_SPOC_Email,@Client_SPOC_PhoneNumber," +
+                //    "@Client_Address,@Project_Type,@Bill_Rate,@Consultant_Pay_Rate,@Notes,@Placement_Status,@Created_Date,@Created_by,@Modified_Date,@Modified_by" +
+                //    ")";
+
+                String query = "INSERT INTO [CG].[Consultant_Placement] "+
                     " VALUES " +
                     "(@Consult_id,@Placed_Sales_Recruiter,@Placed_Tech,@PO_Date,@Visa_Type,@Project_Start_Date,@Project_Duration,@Project_End_Date,@Vendor_Name,@Vendor_SPOC_Name,@Vendor_SPOC_Email," +
                     "@Vendor_SPOC_PhoneNumber,@Vendor_Address,@Client_Name,@Client_SPOC_Name,@Client_SPOC_Email,@Client_SPOC_PhoneNumber," +
@@ -676,6 +746,9 @@ namespace WebApi_New.Models
                         {
                             AddIncentivedetailsFromplacement(em);
                             updateConsultantStatus(em.Consult_id, 3);
+                            updateMarketingStatus(em.Consult_id, 3);
+                            updateSubmissionStatus(em.Consult_id, 3);
+
                             result = true;
                         }
                         myReader.Close();
