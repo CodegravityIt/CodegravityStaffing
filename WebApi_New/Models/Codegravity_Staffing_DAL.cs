@@ -1046,13 +1046,13 @@ namespace WebApi_New.Models
 
             try
             {
-                String query = "INSERT INTO [CG].[[EmployeeIncentiveDetails]] (Consultant_Id,Recruiter_Id,Project_Start_Date,IncentiveType,Term1_IncentivePeriod,Term1_IncentivepayableDate,Term1_IncentiveAmount,Is_Term1_IncentivePaid,Term2_IncentivePeriod," +
+                String query = "INSERT INTO [CG].[EmployeeIncentiveDetails] (Consultant_Id,Recruiter_Id,Project_Start_Date,IncentiveType,Term1_IncentivePeriod,Term1_IncentivepayableDate,Term1_IncentiveAmount,Is_Term1_IncentivePaid,Term2_IncentivePeriod," +
                     "Term2_IncentivePayableDate,Term2_IncentiveAmount,Is_Term2_IncentivePaid,Term3_IncentivePeriod,Term3_IncentivePayableDate,Term3_IncentiveAmount," +
                     "Is_Term3_IncentivePaid,Term4_IncentivePeriod,Term4_IncentivePayableDate,Term4_IncentiveAmount,Is_Term4_IncentivePaid,Comments,Notes1,Notes2,Created_Date,Created_by,Modified_Date,Modified_by,Incentive_Status)" +
                     " VALUES " +
                     "(@Consultant_Id,@Recruiter_Id,@Project_Start_Date,@IncentiveType,@Term1_IncentivePeriod,@Term1_IncentivepayableDate,@Term1_IncentiveAmount,@Is_Term1_IncentivePaid,@Term2_IncentivePeriod,@Term2_IncentivePayableDate,@Term2_IncentiveAmount,@Is_Term2_IncentivePaid," +
                     "@Term3_IncentivePeriod,@Term3_IncentivePayableDate,@Term3_IncentiveAmount,@Is_Term3_IncentivePaid,@Term4_IncentivePeriod,@Term4_IncentivePayableDate," +
-                    "@Term4_IncentiveAmount,@Is_Term4_IncentivePaid,@Comments,@Notes1,@Notes2,@Placement_Status,@Created_Date,@Created_by,@Modified_Date,@Modified_by,@Incentive_Status" +
+                    "@Term4_IncentiveAmount,@Is_Term4_IncentivePaid,@Comments,@Notes1,@Notes2,@Created_Date,@Created_by,@Modified_Date,@Modified_by,@Incentive_Status" +
                     ")";
 
                 DataTable table = new DataTable();
@@ -1062,7 +1062,7 @@ namespace WebApi_New.Models
                 {
                     using (SqlCommand mycommand = new SqlCommand(query, mycon))
                     {
-                        mycommand.Parameters.AddWithValue("@Consult_id", em.Consultant_Id);
+                        mycommand.Parameters.AddWithValue("@Consultant_Id", em.Consultant_Id);
                         mycommand.Parameters.AddWithValue("@Recruiter_Id", em.Recruiter_Id);
                         mycommand.Parameters.AddWithValue("@Project_Start_Date", em.Project_Start_Date);
                         mycommand.Parameters.AddWithValue("@IncentiveType", em.IncentiveType);
