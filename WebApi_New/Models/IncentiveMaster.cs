@@ -15,7 +15,7 @@ namespace WebApi_New.Models
             _configuration = configuration;
             objGG_Dal = new Codegravity_Staffing_DAL(_configuration);
         }
-
+        //
         public List<cg_Incentives> GetIncentivetypeDetails()
         {
             List<cg_Incentives> listEmployee = new List<cg_Incentives>();
@@ -44,6 +44,20 @@ namespace WebApi_New.Models
             }
             return listIncentiveDetails;
             }
+        public List<cg_Incentivedetils> GetincentiveReportsByDate(string reportDate)
+        {
+
+            List<cg_Incentivedetils> listIncentiveDetails = new List<cg_Incentivedetils>();
+
+            try
+            {
+                listIncentiveDetails = objGG_Dal.GetincentiveReportsByDate(reportDate);
+            }
+            catch (Exception ex)
+            {
+            }
+            return listIncentiveDetails;
+        }
 
         public bool AddNewIncentivedetails(cg_Incentivedetils ObjIncentive)
         {

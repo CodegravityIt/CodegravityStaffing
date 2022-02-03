@@ -20,7 +20,7 @@ namespace WebApi_New.Models
 
 
 
-        public DataTable dynamicTableData(string SpNameToExecute)
+        public DataTable dynamicTableData(string SpNameToExecute, List<cg_SPParam> Paramlist)
         {
 
             DataTable dtDynamicData = new DataTable();
@@ -34,8 +34,12 @@ namespace WebApi_New.Models
                     dbConnection.Open();
                     using (SqlCommand dbcommand = new SqlCommand(Query, dbConnection))
                     {
+                        if(Paramlist!=null&& Paramlist.Count>0)
+                            for (int i = 0; i < Paramlist.Count; i++)
+                            {
+                                dbcommand.Parameters.AddWithValue("@"+ Paramlist[i].Param_Name, SqlDbType.NVarChar).Value = Paramlist[i].Param_value;
+                            }
                         dbcommand.CommandType = CommandType.StoredProcedure;
-                        //dbcommand.Parameters.AddWithValue("paraname", SqlDbType.NVarChar).Value = "";
                         dbAdapater = new SqlDataAdapter(dbcommand);
                         dbAdapater.Fill(dtDynamicData);
                         dbConnection.Close();
@@ -62,7 +66,7 @@ namespace WebApi_New.Models
             List<cg_Technology> listTech = getTechnologyDetails();
             try
             {
-                MarketingDetails = dynamicTableData("[dbo].[Sp_Getmarketingdetails]");
+                MarketingDetails = dynamicTableData("[dbo].[Sp_Getmarketingdetails]",null);
                 if (MarketingDetails != null && MarketingDetails.Rows.Count > 0)
                 {
 
@@ -190,7 +194,7 @@ namespace WebApi_New.Models
 
             try
             {
-                dtRecruiters = dynamicTableData("[dbo].[Sp_GetEmployeeDetails]");
+                dtRecruiters = dynamicTableData("[dbo].[Sp_GetEmployeeDetails]",null);
 
 
                 if (dtRecruiters != null && dtRecruiters.Rows.Count > 0)
@@ -236,7 +240,7 @@ namespace WebApi_New.Models
             try
             {
 
-                PlacementDetails = dynamicTableData("[dbo].[Sp_Getplacementdetails]");
+                PlacementDetails = dynamicTableData("[dbo].[Sp_Getplacementdetails]",null);
 
 
                 if (PlacementDetails != null && PlacementDetails.Rows.Count > 0)
@@ -293,7 +297,7 @@ namespace WebApi_New.Models
 
             try
             {
-                dtWorkregion = dynamicTableData("[dbo].[Sp_Getcountrydetails]");
+                dtWorkregion = dynamicTableData("[dbo].[Sp_Getcountrydetails]", null);
 
 
                 if (dtWorkregion != null && dtWorkregion.Rows.Count > 0)
@@ -324,7 +328,7 @@ namespace WebApi_New.Models
 
             try
             {
-                dtTechnology = dynamicTableData("[dbo].[Sp_Gettechnologydetails]");
+                dtTechnology = dynamicTableData("[dbo].[Sp_Gettechnologydetails]", null);
 
 
                 if (dtTechnology != null && dtTechnology.Rows.Count > 0)
@@ -357,7 +361,7 @@ namespace WebApi_New.Models
 
             try
             {
-                dtMarketingstatus = dynamicTableData("[dbo].[Sp_GetMarketingstatusmaster]");
+                dtMarketingstatus = dynamicTableData("[dbo].[Sp_GetMarketingstatusmaster]", null);
 
 
                 if (dtMarketingstatus != null && dtMarketingstatus.Rows.Count > 0)
@@ -390,7 +394,7 @@ namespace WebApi_New.Models
 
             try
             {
-                dtvisatype = dynamicTableData("[dbo].[Sp_Getvisatypedetails]");
+                dtvisatype = dynamicTableData("[dbo].[Sp_Getvisatypedetails]", null);
 
 
                 if (dtvisatype != null && dtvisatype.Rows.Count > 0)
@@ -423,7 +427,7 @@ namespace WebApi_New.Models
 
             try
             {
-                dtincentivetype = dynamicTableData("[dbo].[Sp_Getincentivemaster]");
+                dtincentivetype = dynamicTableData("[dbo].[Sp_Getincentivemaster]", null);
 
 
                 if (dtincentivetype != null && dtincentivetype.Rows.Count > 0)
@@ -457,9 +461,7 @@ namespace WebApi_New.Models
 
             try
             {
-                dtentitlement = dynamicTableData("[dbo].[Sp_Getentitlementdetails]");
-
-
+                dtentitlement = dynamicTableData("[dbo].[Sp_Getentitlementdetails]", null);
                 if (dtentitlement != null && dtentitlement.Rows.Count > 0)
                 {
                     listEntitlement = (from DataRow dr in dtentitlement.Rows
@@ -774,7 +776,7 @@ namespace WebApi_New.Models
             List<cg_Technology> listTech = getTechnologyDetails();
             try
             {
-                SubmissionDetails = dynamicTableData("[dbo].[Sp_GetsubmissionsList]");
+                SubmissionDetails = dynamicTableData("[dbo].[Sp_GetsubmissionsList]", null);
                 if (SubmissionDetails != null && SubmissionDetails.Rows.Count > 0)
                 {
 
@@ -866,7 +868,7 @@ namespace WebApi_New.Models
             List<cg_Technology> listTech = getTechnologyDetails();
             try
             {
-                SubmissionDetails = dynamicTableData("[dbo].[Sp_Getsubmissiondetailedinfo]");
+                SubmissionDetails = dynamicTableData("[dbo].[Sp_Getsubmissiondetailedinfo]", null);
                 if (SubmissionDetails != null && SubmissionDetails.Rows.Count > 0)
                 {
 
@@ -1095,11 +1097,15 @@ namespace WebApi_New.Models
                         mycommand.Parameters.AddWithValue("@Notes1", em.Notes1);
                         mycommand.Parameters.AddWithValue("@Notes2", em.Notes2);
                         mycommand.Parameters.AddWithValue("@Created_Date", DateTime.Now.ToString("MM/dd/yyyy"));
-                        mycommand.Parameters.AddWithValue("@Created_by", em.Created_by);
+                        // mycommand.Parameters.AddWithValue("@Created_by", em.Created_by);
+                        mycommand.Parameters.AddWithValue("@Created_by", "admin");
+
 
 
                         mycommand.Parameters.AddWithValue("@Modified_Date", DateTime.Now.ToString("MM/dd/yyyy"));
-                        mycommand.Parameters.AddWithValue("@Modified_by", em.Modified_by);
+                        // mycommand.Parameters.AddWithValue("@Modified_by", em.Modified_by);
+                        mycommand.Parameters.AddWithValue("@Modified_by", "admin");
+
                         mycommand.Parameters.AddWithValue("@Incentive_Status", em.Incentive_Status);
 
                         mycon.Open();
@@ -1290,13 +1296,115 @@ namespace WebApi_New.Models
 
             try
             {
-                dtincentivedetails = dynamicTableData("[dbo].[Sp_Getincentivedetails]");
+                dtincentivedetails = dynamicTableData("[dbo].[Sp_Getincentivedetails]", null);
 
 
                 if (dtincentivedetails != null && dtincentivedetails.Rows.Count > 0)
                 {
 
                     listIncentivesdetails = (from DataRow dr in dtincentivedetails.Rows
+                                             select new cg_Incentivedetils()
+                                             {
+                                                 Id = dr["Id"] is DBNull ? 0 : Convert.ToInt32(dr["Id"]),
+                                                 Consultant_Id = dr["Consultant_Id"] is DBNull ? 0 : Convert.ToInt32(dr["Consultant_Id"]),
+                                                 Consultant_Name = listconsultant.Where(p => p.Consult_Id == Convert.ToInt32(dr["Consultant_Id"])).FirstOrDefault().Consult_Full_Name,
+                                                 Recruiter_Id = dr["Recruiter_Id"] is DBNull ? 0 : Convert.ToInt32(dr["Recruiter_Id"]),
+                                                 Recruiter_Name = listemp.Where(p => p.Emp_Id == Convert.ToInt32(dr["Recruiter_Id"])).FirstOrDefault().Emp_FullName,
+                                                 IncentiveType = dr["IncentiveType"] is DBNull ? "" : Convert.ToString(dr["IncentiveType"]),
+                                                 Project_Start_Date = dr["Project_Start_Date"] is DBNull ? "" : Convert.ToDateTime(dr["Project_Start_Date"]).ToString("MM/dd/yyyy"),
+
+                                                 Term1_IncentivePeriod = dr["Term1_IncentivePeriod"] is DBNull ? "" : Convert.ToString(dr["Term1_IncentivePeriod"]),
+                                                 Term1_IncentivepayableDate = dr["Term1_IncentivepayableDate"] is DBNull ? "" : Convert.ToDateTime(dr["Term1_IncentivepayableDate"]).ToString("MM/dd/yyyy"),
+                                                 Term1_IncentiveAmount = dr["Term1_IncentiveAmount"] is DBNull ? "" : Convert.ToString(dr["Term1_IncentiveAmount"]),
+                                                 Is_Term1_IncentivePaid = dr["Is_Term1_IncentivePaid"] is DBNull ? 0 : Convert.ToInt32(dr["Is_Term1_IncentivePaid"]),
+
+                                                 Term2_IncentivePeriod = dr["Term2_IncentivePeriod"] is DBNull ? "" : Convert.ToString(dr["Term2_IncentivePeriod"]),
+                                                 Term2_IncentivePayableDate = dr["Term2_IncentivePayableDate"] is DBNull ? "" : Convert.ToDateTime(dr["Term2_IncentivePayableDate"]).ToString("MM/dd/yyyy"),
+                                                 Term2_IncentiveAmount = dr["Term2_IncentiveAmount"] is DBNull ? "" : Convert.ToString(dr["Term2_IncentiveAmount"]),
+                                                 Is_Term2_IncentivePaid = dr["Is_Term2_IncentivePaid"] is DBNull ? 0 : Convert.ToInt32(dr["Is_Term2_IncentivePaid"]),
+
+                                                 Term3_IncentivePeriod = dr["Term3_IncentivePeriod"] is DBNull ? "" : Convert.ToString(dr["Term3_IncentivePeriod"]),
+                                                 Term3_IncentivePayableDate = dr["Term3_IncentivePayableDate"] is DBNull ? "" : Convert.ToDateTime(dr["Term3_IncentivePayableDate"]).ToString("MM/dd/yyyy"),
+                                                 Term3_IncentiveAmount = dr["Term3_IncentiveAmount"] is DBNull ? "" : Convert.ToString(dr["Term3_IncentiveAmount"]),
+                                                 Is_Term3_IncentivePaid = dr["Is_Term3_IncentivePaid"] is DBNull ? 0 : Convert.ToInt32(dr["Is_Term3_IncentivePaid"]),
+
+                                                 Term4_IncentivePeriod = dr["Term4_IncentivePeriod"] is DBNull ? "" : Convert.ToString(dr["Term4_IncentivePeriod"]),
+                                                 Term4_IncentivePayableDate = dr["Term4_IncentivePayableDate"] is DBNull ? "" : Convert.ToDateTime(dr["Term4_IncentivePayableDate"]).ToString("MM/dd/yyyy"),
+                                                 Term4_IncentiveAmount = dr["Term4_IncentiveAmount"] is DBNull ? "" : Convert.ToString(dr["Term4_IncentiveAmount"]).ToString(),
+                                                 Is_Term4_IncentivePaid = dr["Is_Term4_IncentivePaid"] is DBNull ? 0 : Convert.ToInt32(dr["Is_Term4_IncentivePaid"]),
+
+                                                 Comments = dr["Comments"] is DBNull ? "" : Convert.ToString(dr["Comments"]),
+                                                 Notes1 = dr["Notes1"] is DBNull ? "" : Convert.ToString(dr["Notes1"]),
+                                                 Notes2 = dr["Notes2"] is DBNull ? "" : Convert.ToString(dr["Notes2"]),
+
+                                                 Created_Date = dr["Created_Date"] is DBNull ? "" : Convert.ToDateTime(dr["Created_Date"]).ToString("MM/dd/yyyy"),
+                                                 Created_by = dr["Created_by"] is DBNull ? "" : Convert.ToString(dr["Created_by"]),
+                                                 Modified_Date = dr["Modified_Date"] is DBNull ? "" : Convert.ToDateTime(dr["Modified_Date"]).ToString("MM/dd/yyyy"),
+                                                 Modified_by = dr["Modified_by"] is DBNull ? "" : Convert.ToString(dr["Modified_by"]),
+
+                                                 Incentive_Status = dr["Incentive_Status"] is DBNull ? "" : Convert.ToString(dr["Incentive_Status"])
+
+                                             }).ToList();
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return null;
+            }
+            return listIncentivesdetails;
+        }
+
+
+        public List<cg_Incentivedetils> GetincentiveReportsByDate( string Reportdate)
+        {
+            DataTable dtincentiveReportdetails = new DataTable();
+
+            List<cg_Incentivedetils> listIncentivesdetails = new List<cg_Incentivedetils>();
+            List<cg_Employees> listemp = getEmployeeDetails();
+            List<cg_Consultant> listconsultant = getConsultDetails(0);
+
+
+            try
+            {
+                List<cg_SPParam> Paramlist = new List<cg_SPParam>();
+
+                IFormatProvider culture = new CultureInfo("en-US", true);
+                DateTime dateVal = DateTime.ParseExact(Reportdate.ToString(), "yyyy-MM-dd", culture);
+                cg_SPParam param = new cg_SPParam();
+                param.Param_Name = "ReportDate";
+                param.Param_value = dateVal.ToString();
+                Paramlist.Add(param);
+                dtincentiveReportdetails = dynamicTableData("[dbo].[Sp_GetincentiveReportsByPayableDate]", Paramlist);
+
+
+                // dtConsult = dynamicTableData("[dbo].[Sp_Getconsultantdetails]");
+                string Query = @"[dbo].[Sp_GetincentiveReportsByPayableDate]";
+                string sqlDatasource = _configuration.GetConnectionString("CodeGravityDB");
+                SqlDataAdapter dbAdapater;
+                using (SqlConnection dbConnection = new SqlConnection(sqlDatasource))
+                {
+                    dbConnection.Open();
+                    using (SqlCommand dbcommand = new SqlCommand(Query, dbConnection))
+                    {
+                        dbcommand.CommandType = CommandType.StoredProcedure;
+                        dbcommand.Parameters.AddWithValue("@ReportDate", SqlDbType.DateTime).Value = Reportdate;
+                        dbAdapater = new SqlDataAdapter(dbcommand);
+                        dbAdapater.Fill(dtincentiveReportdetails);
+                        dbConnection.Close();
+                    }
+                }
+
+
+
+
+
+                if (dtincentiveReportdetails != null && dtincentiveReportdetails.Rows.Count > 0)
+                {
+
+                    listIncentivesdetails = (from DataRow dr in dtincentiveReportdetails.Rows
                                              select new cg_Incentivedetils()
                                              {
                                                  Id = dr["Id"] is DBNull ? 0 : Convert.ToInt32(dr["Id"]),

@@ -150,7 +150,12 @@ namespace WebApi_New.Models
 
 
     }
-
+     public class cg_SPParam
+    {             
+        public string Param_Name { get; set; }
+        public string Param_value { get; set; }
+      
+    }
 
     public class cg_Submissions
     {

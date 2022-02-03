@@ -28,6 +28,27 @@ namespace WebApi_New.Controllers
 
             return new JsonResult(ObjIM.GetIncentiveDetails());
 
+          
+        }
+        ////  [HttpGet("{ReportDate}")]
+        //[HttpGet]
+        //[ActionName("GetincentiveReportsByDate")]
+        //public JsonResult GetincentiveReportsByDate(DateTime ReportDate)
+        //{
+
+        //    return new JsonResult(ObjIM.GetincentiveReportsByDate(ReportDate));
+
+
+        //}
+
+
+        [HttpGet("{ReportDate}")]
+        [ActionName("GetincentiveReportsByDate")]
+        public JsonResult GetincentiveReportsByDate(string ReportDate)
+        {
+
+            return new JsonResult(ObjIM.GetincentiveReportsByDate(ReportDate));
+
 
         }
         [HttpGet]
