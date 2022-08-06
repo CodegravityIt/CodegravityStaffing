@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,8 +16,10 @@ namespace WebApi_New.Controllers
     {
         private readonly IConfiguration _configuration;
         CountryMaster ObjPM;//= new PlacementMaster();
-        public CountryMasterController(IConfiguration configuration)
+        private readonly ILogger<CountryMasterController> _logger;
+        public CountryMasterController(IConfiguration configuration, ILogger<CountryMasterController> logger)
         {
+            _logger = logger;
             _configuration = configuration;
             ObjPM = new CountryMaster(_configuration);
 
@@ -26,8 +29,15 @@ namespace WebApi_New.Controllers
         [HttpGet]
         public JsonResult Get()
         {
-
-            return new JsonResult(ObjPM.getCountryDetails());
+            try
+            {
+                return new JsonResult(ObjPM.getCountryDetails());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Country Details: " + ex.Message, ex);
+                return null;
+            }
         }
     }
 }
