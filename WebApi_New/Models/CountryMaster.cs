@@ -24,6 +24,7 @@ namespace WebApi_New.Models
             }
             catch (Exception ex)
             {
+                throw;
             }
             return listCountry;
         }
