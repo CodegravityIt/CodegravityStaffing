@@ -30,10 +30,17 @@ namespace WebApi_New
             {
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyMethod().AllowAnyHeader());
             });
+
+            // Register the Swagger generator, defining 1 or more Swagger documents
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Code Gravity", Version = "v1" });
+            });
+
             services.AddControllersWithViews()
                 .AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.
-                Json.ReferenceLoopHandling.Ignore) 
+                Json.ReferenceLoopHandling.Ignore)
                 .AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver =
                 new DefaultContractResolver());
             services.AddControllers();
@@ -43,6 +50,14 @@ namespace WebApi_New
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                // For Debug in Kestrel
+                c.SwaggerEndpoint("v1/swagger.json", "Code Gravity V1");
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -56,6 +71,7 @@ namespace WebApi_New
             {
                 endpoints.MapControllers();
             });
+            app.UseStaticFiles();
         }
     }
 }
